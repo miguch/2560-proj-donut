@@ -1,0 +1,27 @@
+{
+  "name": "final",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "start": "NODE_ENV=development concurrently --kill-others \"npm run front\" \"npm run server\"",
+    "server": "node server/server.js",
+    "front": "vite",
+    "dev": "NODE_ENV=development concurrently --kill-others \"npm run front\" \"nodemon --watch server server/server.js\"",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "concurrently": "^7.5.0",
+    "express": "^4.18.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.9",
+    "@types/react": "^18.0.24",
+    "@types/react-dom": "^18.0.8",
+    "@vitejs/plugin-react": "^2.2.0",
+    "typescript": "^4.6.4",
+    "vite": "^3.2.3"
+  }
+}
