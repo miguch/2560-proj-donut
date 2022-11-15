@@ -23,6 +23,6 @@ app.use((err, req, res, next) => {
 });
 
 // listen for requests :)
-const listener = app.listen(parseInt(process.env.PORT) + 1, function () {
+const listener = app.listen(parseInt(process.env.PORT || 3000) + 1, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
