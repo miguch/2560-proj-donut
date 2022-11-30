@@ -4,12 +4,17 @@ import {
   Route,
   Link,
 } from 'react-router-dom';
+import Layout from './layout/layout';
 import LoginPage from './pages/login/login';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <div></div>,
+    element: <Layout />,
+  },
+  {
+    path: '/gggg',
+    element: <Layout />,
   },
   {
     path: '/login',

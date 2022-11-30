@@ -10,7 +10,7 @@ function registerPassport(app) {
       secret: 'courseNet11111',
       resave: true,
       saveUninitialized: true,
-      name: 'course___u-sess'
+      name: 'course___u-sess',
     })
   );
 
@@ -25,10 +25,15 @@ function registerPassport(app) {
           '.glitch.me/api/login/github/return',
       },
       function (accessToken, refreshToken, profile, cb) {
-        console.log(profile)
         return cb(null, profile);
       }
     )
+  );
+
+  passport.use(
+    new LocalStrategy((username, password, cb) => {
+      cb('null');
+    })
   );
 
   passport.serializeUser(function (user, done) {
@@ -42,9 +47,16 @@ function registerPassport(app) {
   app.use(passport.session());
   app.use(async (req, res, next) => {
     // check user credential
-    // console.log(req);
-    next();
-  })
+    console.log(req.path, req.query);
+    if (req.path.startsWith('/login') || req.path.startsWith('/logoff')) {
+      return next();
+    }
+    if (req.isAuthenticated() && req.user) {
+      return next();
+    }
+    res.status(401);
+    res.end();
+  });
 }
 
 const api = express.Router();
@@ -55,14 +67,28 @@ api.get('/', (req, res) => {
 
 api.get(
   '/github/return',
-  passport.authenticate('github', { failureRedirect: '/' }),
+  passport.authenticate('github', {
+    keepSessionInfo: true,
+  }),
   function (req, res) {
-    res.redirect('/');
+    if (req.session.returnUrl) {
+      res.redirect(req.session.returnUrl);
+      delete req.session.returnUrl;
+    } else {
+      res.redirect('/');
+    }
   }
 );
 
-api.get('/github', passport.authenticate('github'));
-
+api.get('/github', (req, res, next) => {
+  if (req.query.r) {
+    req.session.returnUrl = req.query.r;
+  }
+  passport.authenticate('github', {
+    successReturnToOrRedirect: req.query.r,
+    keepSessionInfo: true,
+  })(req, res, next);
+});
 
 module.exports = {
   registerPassport,

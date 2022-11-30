@@ -15,6 +15,10 @@ app.get('/logoff',
 
 app.use('/login', loginApi);
 
+app.use('/user', (req, res, next) => {
+  res.json(req.user);
+});
+
 //define your routes here. don't forget about error handling
 app.get('/', function (request, response) {
   response.json({
