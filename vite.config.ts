@@ -8,6 +8,16 @@ export default ({ mode }) => {
 
   return defineConfig({
     plugins: [react()],
+    css: {
+      preprocessorOptions: {
+        less: {
+          modifyVars: {
+            'arco-theme-tag': '.arco-theme',
+          },
+          javascriptEnabled: true,
+        },
+      },
+    },
 
     server: {
       port: port,
@@ -16,9 +26,9 @@ export default ({ mode }) => {
         '/api': {
           target: {
             host: 'localhost',
-            port: port + 1
+            port: port + 1,
           },
-          rewrite: (path) => path.replace(/^\/api/, ""),
+          rewrite: (path) => path.replace(/^\/api/, ''),
         },
       },
     },

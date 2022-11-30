@@ -4,7 +4,7 @@ import { RouterProvider } from 'react-router-dom';
 import router from './routes';
 import useTheme from './hooks/useTheme';
 
-import "@arco-design/web-react/dist/css/arco.css";
+import "@arco-design/web-react/dist/css/index.less";
 
 function App() {
   useTheme();

@@ -17,7 +17,6 @@ export default function useUser(): {
   return {
     user: data,
     isLoading: !error && !data,
-    // isLoading: true,
     error: error,
   };
 }
