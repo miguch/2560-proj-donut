@@ -10,6 +10,7 @@ function registerPassport(app) {
       secret: 'courseNet11111',
       resave: true,
       saveUninitialized: true,
+      name: 'course___u-sess'
     })
   );
 
@@ -23,7 +24,8 @@ function registerPassport(app) {
           process.env.PROJECT_DOMAIN +
           '.glitch.me/api/login/github/return',
       },
-      function (token, tokenSecret, profile, cb) {
+      function (accessToken, refreshToken, profile, cb) {
+        console.log(profile)
         return cb(null, profile);
       }
     )

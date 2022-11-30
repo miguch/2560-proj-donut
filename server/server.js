@@ -5,6 +5,14 @@ const { registerPassport, loginApi } = require('./modules/login');
 app.use(express.json());
 
 registerPassport(app);
+
+app.get('/logoff',
+  function(req, res) {
+    req.session.destroy();
+    res.redirect('/');
+  }
+);
+
 app.use('/login', loginApi);
 
 //define your routes here. don't forget about error handling
