@@ -1,5 +1,5 @@
 import { Box, Button, Card, useTheme } from '@mui/material';
-import { GitHub } from '@mui/icons-material';
+// import { GitHub } from '@mui/icons-material';
 import { LoginContainer } from './login.style';
 
 export default function LoginPage() {
@@ -10,7 +10,7 @@ export default function LoginPage() {
 
   return (
     <LoginContainer>
-      <Box
+      {/* <Box
         sx={{
           p: 4,
           border: '1px solid grey',
@@ -25,7 +25,7 @@ export default function LoginPage() {
         >
           Sign In with GitHub
         </Button>
-      </Box>
+      </Box> */}
     </LoginContainer>
   );
 }
