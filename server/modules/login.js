@@ -21,7 +21,7 @@ function registerPassport(app) {
         callbackURL:
           'https://' +
           process.env.PROJECT_DOMAIN +
-          '.glitch.me/login/github/return',
+          '.glitch.me/api/login/github/return',
       },
       function (token, tokenSecret, profile, cb) {
         return cb(null, profile);
@@ -40,7 +40,7 @@ function registerPassport(app) {
   app.use(passport.session());
   app.use(async (req, res, next) => {
     // check user credential
-    console.log(req);
+    // console.log(req);
     next();
   })
 }
