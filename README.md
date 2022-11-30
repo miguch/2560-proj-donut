@@ -1,5 +1,4 @@
 # 2560 Final Project 
-> This is yiming's branch for prof module.
 
 Qisheng Ye  qiy48
 
