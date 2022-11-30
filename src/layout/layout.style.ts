@@ -22,4 +22,13 @@ export const HeaderTitle = styled.div`
 `;
 export const HeaderActions = styled.div`
   line-height: 4rem;
+  display: flex;
+  align-items: center;
+`;
+
+export const AvatarContainer = styled.div`
+  width: 2.5rem;
+  height: 2.5rem;
+  line-height: 2.5rem;
+  margin-left: 1rem;
 `;

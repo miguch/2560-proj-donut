@@ -1,6 +1,7 @@
 import { Button } from '@arco-design/web-react';
 import { IconMoon, IconSun } from '@arco-design/web-react/icon';
 import { useState } from 'react';
+import Avatar from './avatar';
 import { HeaderActions, HeaderContainer, HeaderTitle } from './layout.style';
 
 export default function Header() {
@@ -29,6 +30,7 @@ export default function Header() {
             onClick={switchTheme}
             icon={isDarkMode ? <IconMoon /> : <IconSun />}
           ></Button>
+          <Avatar></Avatar>
         </HeaderActions>
       </HeaderContainer>
     </div>

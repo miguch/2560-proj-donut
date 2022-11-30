@@ -16,7 +16,14 @@ app.get('/logoff',
 app.use('/login', loginApi);
 
 app.use('/user', (req, res, next) => {
-  res.json(req.user);
+  const user = {...req.user}
+  if (user.photos?.length > 0) {
+    user.avatar = user.photos[0].value
+  }
+  if (user.emails?.length > 0) {
+    user.email = user.emails[0].value
+  }
+  res.json(user);
 });
 
 //define your routes here. don't forget about error handling
