@@ -1,31 +1,18 @@
-import { Box, Button, Card, useTheme } from '@mui/material';
 // import { GitHub } from '@mui/icons-material';
+import { Button } from '@arco-design/web-react';
 import { LoginContainer } from './login.style';
+import { IconGithub } from '@arco-design/web-react/icon';
 
 export default function LoginPage() {
   function onGitHubLogin() {
     window.location.href = '/api/login/github';
   }
-  const theme = useTheme();
 
   return (
     <LoginContainer>
-      {/* <Box
-        sx={{
-          p: 4,
-          border: '1px solid grey',
-          borderRadius: 2,
-        }}
-      >
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={onGitHubLogin}
-          startIcon={<GitHub />}
-        >
-          Sign In with GitHub
-        </Button>
-      </Box> */}
+      <Button type="primary" onClick={onGitHubLogin} icon={<IconGithub />}>
+        Sign In with GitHub
+      </Button>
     </LoginContainer>
   );
 }
