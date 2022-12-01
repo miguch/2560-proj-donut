@@ -1,4 +1,11 @@
-import { Button, Divider, Dropdown, Image, Menu } from '@arco-design/web-react';
+import {
+  Button,
+  Divider,
+  Dropdown,
+  Image,
+  Menu,
+  Modal,
+} from '@arco-design/web-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useUser from '../hooks/useUser';
@@ -7,23 +14,23 @@ import { AvatarContainer } from './layout.style';
 export default function Avatar() {
   const { user, isLoading, error } = useUser();
   const navigate = useNavigate();
+  const [showProfile, setShowProfile] = useState(false);
 
   const onAction = async (key: string) => {
     switch (key) {
       case 'profile':
+        setShowProfile(true);
         break;
       case 'logoff':
-        await fetch("/api/logoff")
-        navigate("/login");
+        await fetch('/api/logoff');
+        navigate('/login');
         break;
     }
   };
 
   const avatarActions = (
     <Menu onClickMenuItem={onAction}>
-      <Menu.Item key="profile">
-        <Link to={`/profile`}>Profile</Link>
-      </Menu.Item>
+      <Menu.Item key="profile">Profile</Menu.Item>
       <Divider style={{ margin: '2px 0' }}></Divider>
       <Menu.Item key="logoff">Log Off</Menu.Item>
     </Menu>
@@ -43,6 +50,38 @@ export default function Avatar() {
           width="100%"
         ></Image>
       </Dropdown>
+
+      <Modal
+        footer={null}
+        onCancel={() => setShowProfile(false)}
+        title="User Profile"
+        visible={showProfile}
+        style={{ textAlign: 'center', maxWidth: '80%' }}
+      >
+        <Image src={user?.avatar} width="50px" height="50px"></Image>
+        {[
+          {
+            label: 'Username',
+            field: 'username',
+          },
+          {
+            label: 'Name',
+            field: 'displayName',
+          },
+          {
+            label: 'Email',
+            field: 'email',
+          },
+          {
+            label: 'Type',
+            field: 'type',
+          },
+        ].map(({ label, field }) => (
+          <div>
+            {label}: <b>{(user as any)[field]}</b>
+          </div>
+        ))}
+      </Modal>
     </AvatarContainer>
   );
 }

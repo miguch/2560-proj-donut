@@ -1,7 +1,7 @@
 const express = require('express');
 const passport = require('passport');
 const GithubStrategy = require('passport-github').Strategy;
-const LocalStrategy = require('passport-local');
+const CustomStrategy = require('passport-custom').Strategy;
 const crypto = require('crypto');
 const userSchema = require('../schemas/user');
 
@@ -32,8 +32,8 @@ function registerPassport(app) {
   );
 
   passport.use(
-    new LocalStrategy((username, password, cb) => {
-      cb('null');
+    new CustomStrategy((req, cb) => {
+      cb(null, req.user);
     })
   );
 
@@ -117,20 +117,83 @@ api.post('/signup', async (req, res, next) => {
     });
     return;
   }
-  const item = await userSchema.mongo.find({
-    $or: [{ username: newUser.username }, { email: newUser.email }],
+  const nameItem = await userSchema.mongo.find({
+    $or: [{ username: newUser.username }],
+  });
+  const emailItem = await userSchema.mongo.find({
+    $or: [{ email: newUser.email }],
   });
 
-  console.log(item);
+  if (nameItem.length > 0) {
+    res.json({
+      status: -1,
+      message: 'username is already in use',
+    });
+  }
+  if (emailItem.length > 0) {
+    res.json({
+      status: -1,
+      message: 'email is already in use',
+    });
+  }
 
-  const { key, salt } = hashPasswd(newUser.password);
+  const { key, salt } = await hashPasswd(newUser.password);
 
-  res.json({
-    status: 200,
+  const newUserItem = new userSchema.mongo({
+    ...newUser,
+    salt,
+    password: key,
+    avatar: '/default.png',
+  });
+
+  await newUserItem.save();
+
+  req.login(newUserItem, function(err) {
+    if (err) { return next(err); }
+    res.json({
+      status: 200,
+    });
   });
 });
 
-api.post('/local', (req, res, next) => {});
+api.post('/local', async (req, res, next) => {
+  const info = req.body;
+  const { error, value } = userSchema.loginValidation.validate(info);
+
+  if (error) {
+    res.status(422);
+    res.json({
+      message: error.message,
+    });
+    return;
+  }
+  const item = await userSchema.mongo.findOne({
+    $or: [{ email: info.email }, { username: info.username }],
+  });
+  if (!item) {
+    res.json({
+      status: -1,
+      message: 'username or password incorrect',
+    });
+    return;
+  }
+
+  const { key, salt } = await hashPasswd(info.password, item.salt);
+  if (key.compare(item.password) !== 0) {
+    res.json({
+      status: -1,
+      message: 'username or password incorrect',
+    });
+    return;
+  }
+
+  req.login(item, function(err) {
+    if (err) { return next(err); }
+    res.json({
+      status: 200,
+    });
+  });
+});
 
 module.exports = {
   registerPassport,

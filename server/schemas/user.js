@@ -12,8 +12,8 @@ const schema = new Schema({
   displayName: String,
   avatar: String,
   email: String,
-  password: String,
-  salt: String,
+  password: Buffer,
+  salt: Buffer,
   type: String,
 });
 const signupValidation = Joi.object({
@@ -24,7 +24,7 @@ const signupValidation = Joi.object({
     .message('Please enter valid email address')
     .required(),
   password: Joi.string(),
-  type: Joi.string().options(['student', 'instructor']),
+  type: Joi.string().valid('student', 'instructor').required(),
 });
 const loginValidation = Joi.object({
   username: Joi.string().required(),

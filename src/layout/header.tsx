@@ -1,4 +1,4 @@
-import { Button } from '@arco-design/web-react';
+import { Button, Modal } from '@arco-design/web-react';
 import { IconMoon, IconSun } from '@arco-design/web-react/icon';
 import { useState } from 'react';
 import Avatar from './avatar';

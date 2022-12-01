@@ -3,4 +3,5 @@ export interface User {
   displayName: string;
   avatar: string;
   email: string;
+  type: 'student' | 'instructor' | 'admin';
 }

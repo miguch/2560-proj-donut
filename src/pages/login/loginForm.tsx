@@ -1,9 +1,17 @@
-import { Button, Divider, Form, Input, Select } from '@arco-design/web-react';
+import {
+  Button,
+  Divider,
+  Form,
+  Input,
+  Message,
+  Select,
+} from '@arco-design/web-react';
 import useForm from '@arco-design/web-react/es/Form/useForm';
 
 import { IconGithub } from '@arco-design/web-react/icon';
 import { useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import useFetch from '../../hooks/useFetch';
 import { LoginTitle } from './login.style';
 
 interface LoginFormProps {
@@ -20,14 +28,74 @@ export default function LoginForm({
   const [isSignup, setIsSignup] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [signupForm] = useForm();
+  const [loginForm] = useForm();
+  const navigate = useNavigate();
+  const fetcher = useFetch(false);
 
   function onGitHubLogin() {
     window.location.href = '/api/login/github' + location.search;
   }
 
-  function onLogin() {}
+  async function onLogin() {
+    try {
+      setIsSubmitting(true);
+      let formValues;
+      try {
+        formValues = await loginForm.validate();
+      } catch (e) {
+        console.log('form incomplete');
+        Message.warning('Please check if your info is complete');
+        return;
+      }
 
-  function onSignup() {}
+      const query = new URLSearchParams(location.search);
+      const postData = {
+        ...formValues,
+      };
+      const res = await fetcher('/api/login/local', {
+        method: 'POST',
+        body: JSON.stringify(postData),
+      });
+      if (res.status != 200) {
+        Message.error(res.message);
+        return;
+      }
+      navigate(query.has('r') ? (query.get('r') as string) : '/');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function onSignup() {
+    try {
+      setIsSubmitting(true);
+      let formValues;
+      try {
+        formValues = await signupForm.validate();
+      } catch (e) {
+        console.log('form incomplete');
+        Message.warning('Please check if your info is complete');
+        return;
+      }
+
+      const query = new URLSearchParams(location.search);
+      const postData = {
+        ...formValues,
+      };
+      delete postData.repeat;
+      const res = await fetcher('/api/login/signup', {
+        method: 'POST',
+        body: JSON.stringify(postData),
+      });
+      if (res.status != 200) {
+        Message.error(res.message);
+        return;
+      }
+      navigate(query.has('r') ? (query.get('r') as string) : '/');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   return (
     <>
@@ -37,23 +105,38 @@ export default function LoginForm({
       </Button>
       <Divider></Divider>
       {!isSignup && (
-        <Form labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}>
-          <Form.Item label="Username" field="username">
+        <Form
+          form={loginForm}
+          labelCol={{ span: 10 }}
+          wrapperCol={{ span: 14 }}
+        >
+          <Form.Item
+            label="Username"
+            field="username"
+            rules={[{ required: true }]}
+          >
             <Input placeholder="username / email"></Input>
           </Form.Item>
 
-          <Form.Item label="Password" field="password">
+          <Form.Item
+            label="Password"
+            field="password"
+            rules={[{ required: true }]}
+          >
             <Input type="password" placeholder="password"></Input>
           </Form.Item>
 
           <Form.Item wrapperCol={{ span: 24 }}>
-            <Button type="primary" onClick={onLogin}>
+            <Button
+              htmlType="submit"
+              loading={isSubmitting}
+              type="primary"
+              onClick={onLogin}
+            >
               Login
             </Button>
             <Divider type="vertical"></Divider>
-            <Button loading={isSubmitting} onClick={() => setIsSignup(true)}>
-              Signup
-            </Button>
+            <Button onClick={() => setIsSignup(true)}>Signup</Button>
           </Form.Item>
         </Form>
       )}
@@ -132,13 +215,11 @@ export default function LoginForm({
           </Form.Item>
 
           <Form.Item wrapperCol={{ span: 24 }}>
-            <Button type="primary" onClick={onSignup}>
+            <Button loading={isSubmitting} type="primary" onClick={onSignup}>
               Sign up
             </Button>
             <Divider type="vertical"></Divider>
-            <Button loading={isSubmitting} onClick={() => setIsSignup(false)}>
-              Back
-            </Button>
+            <Button onClick={() => setIsSignup(false)}>Back</Button>
           </Form.Item>
         </Form>
       )}

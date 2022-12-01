@@ -1,16 +1,38 @@
+import { Message } from '@arco-design/web-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-// used for calling apis that requires authorization
-export default function useFetch() {
+export default function useFetch(auth = true) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const fetcher = (...args: Parameters<typeof fetch>) =>
-    fetch(...args).then((res) => {
-      if (res.status === 401) {
+  const fetcher = (input: RequestInfo | URL, init?: RequestInit) =>
+    fetch(input, {
+      ...init,
+      headers: {
+        ...init?.headers,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }).then((res) => {
+      if (auth && res.status === 401) {
         navigate('/login?r=' + encodeURIComponent(location.pathname));
+        return;
       }
-      return res.json();
+      if (res.status >= 400) {
+        try {
+          res.json().then((obj) => {
+            Message.error(obj.message || 'request failed');
+          });
+        } catch {
+          Message.error('request failed');
+        }
+        throw res;
+      }
+      try {
+        return res.json();
+      } catch {
+        return res.text();
+      }
     });
   return fetcher;
 }

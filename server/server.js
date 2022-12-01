@@ -38,6 +38,7 @@ app.use('/user', (req, res, next) => {
   if (user.emails?.length > 0) {
     user.email = user.emails[0].value;
   }
+  console.log(user)
   res.json(user);
 });
 
