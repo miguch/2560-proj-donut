@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 
+// used for calling apis that requires authorization
 export default function useFetch() {
   const navigate = useNavigate();
   const location = useLocation();

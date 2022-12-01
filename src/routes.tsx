@@ -7,7 +7,7 @@ import {
 import Layout from './layout/layout';
 import LoginPage from './pages/login/login';
 
-const router = createBrowserRouter([
+export const baseRouter = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
@@ -18,4 +18,10 @@ const router = createBrowserRouter([
   },
 ]);
 
-export default router;
+export const mainRouter = createBrowserRouter([
+  {
+    path: '/',
+    element: <></>
+  }
+]);
+

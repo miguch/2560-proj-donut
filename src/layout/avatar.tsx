@@ -1,18 +1,20 @@
 import { Button, Divider, Dropdown, Image, Menu } from '@arco-design/web-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useUser from '../hooks/useUser';
 import { AvatarContainer } from './layout.style';
 
 export default function Avatar() {
   const { user, isLoading, error } = useUser();
+  const navigate = useNavigate();
 
-  const onAction = (key: string) => {
+  const onAction = async (key: string) => {
     switch (key) {
       case 'profile':
         break;
       case 'logoff':
-        window.location.reload();
+        await fetch("/api/logoff")
+        navigate("/login");
         break;
     }
   };

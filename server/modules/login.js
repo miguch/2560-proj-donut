@@ -3,6 +3,7 @@ const passport = require('passport');
 const GithubStrategy = require('passport-github').Strategy;
 const LocalStrategy = require('passport-local');
 const crypto = require('crypto');
+const userSchema = require('../schemas/user');
 
 function registerPassport(app) {
   app.use(
@@ -89,6 +90,47 @@ api.get('/github', (req, res, next) => {
     keepSessionInfo: true,
   })(req, res, next);
 });
+
+function hashPasswd(pass, salt) {
+  salt = salt || crypto.randomBytes(16);
+  return new Promise((resolve, reject) => {
+    crypto.pbkdf2(pass, salt, 32000, 64, 'sha512', (err, key) => {
+      if (err) {
+        reject(err);
+      }
+      resolve({
+        key,
+        salt,
+      });
+    });
+  });
+}
+
+api.post('/signup', async (req, res, next) => {
+  const newUser = req.body;
+  const { error, value } = userSchema.signupValidation.validate(newUser);
+
+  if (error) {
+    res.status(422);
+    res.json({
+      message: error.message,
+    });
+    return;
+  }
+  const item = await userSchema.mongo.find({
+    $or: [{ username: newUser.username }, { email: newUser.email }],
+  });
+
+  console.log(item);
+
+  const { key, salt } = hashPasswd(newUser.password);
+
+  res.json({
+    status: 200,
+  });
+});
+
+api.post('/local', (req, res, next) => {});
 
 module.exports = {
   registerPassport,
