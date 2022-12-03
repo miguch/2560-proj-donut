@@ -1,0 +1,434 @@
+{
+	"info": {
+		"_postman_id": "d41f7d67-6b54-40a4-9bdd-ca42a3b4f5c2",
+		"name": "CourseSystem",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "insert teacher",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n       \"teacher_id\": \"1204\",\n       \"teacher_name\":\"Steven Lee\",\n       \"department\": \"Computer Science\",\n        \"position\": \"Associate Prof\"\n\n}"
+				},
+				"url": {
+					"raw": "{{url}}/teacheradded",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"teacheradded"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "insert student",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n       \"student_id\": \"19120003\",\n       \"student_name\":\"Yifei\",\n       \"gender\": \"Male\",\n       \"age\": 24,\n       \"department\": \"Computer and Information Science\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/studentadded",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"studentadded"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get courses by teacher_id",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": " {\n        \n        \"student_id\": \"1201\"\n       \n}"
+				},
+				"url": {
+					"raw": "{{url}}/mylesson",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"mylesson"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "insert course",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"course_id\" : \"INFSCI2430\",\n    \"course_name\": \"Information Visualization\", \n    \"credit\": 3, \n    \"department\": \"Information Science\", \n    \"teacher_id\": \"1201\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/courseadded",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"courseadded"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all courses",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/course",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"course"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all teachers",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/teacher",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"teacher"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all users",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/account",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "insert account",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n       \"username\": \"19120001\",\n       \"password\":\"123456\",\n       \"identity\": \"student\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/account",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n       \"username\": \"1201\",\n       \"password\":\"123456\",\n       \"identity\": \"teacher\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add selection",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"course_id\": \"INFSCI2430\",\n    \"student_id\": \"19120001\"\n    \n}"
+				},
+				"url": {
+					"raw": "{{url}}/xuanke",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"xuanke"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all student",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/student",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"student"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteClass",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"student_id\": \"19120003\",\n    \"course_id\": \"INFSCI2140\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/deleteclass",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"deleteclass"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "couldchose",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"student_id\": \"19120001\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/couldchose",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"couldchose"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "haveChosen",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"student_id\": \"19120001\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/havechosen",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"havechosen"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get student by course",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"course_id\":\"INFSCI2140\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/kecheng",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"kecheng"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ChangeGrade",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"course_id\":\"INFSCI2140\",\n    \"student_id\": \"19120001\",\n    \"grade\": 80\n}"
+				},
+				"url": {
+					"raw": "{{url}}/changevalue",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"changevalue"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "https://closed-outstanding-helicopter.glitch.me",
+			"type": "default",
+			"disabled": true
+		},
+		{
+			"key": "url",
+			"value": "localhost:3000",
+			"type": "default"
+		}
+	]
+}

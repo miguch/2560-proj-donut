@@ -21,15 +21,12 @@ app.use(express.json());
 
 const mongoose = require("mongoose");
 
+const username = "yiming1001";
+const password = "g2rDNUsB1S5hjTx3";
+const host = "cluster0.ncmarh1.mongodb.net";
+const database = "courseSelection";
 const mongoDB =
-  'mongodb+srv://' +
-  process.env.MONGO_USERNAME +
-  ':' +
-  process.env.MONGO_PASSWD +
-  '@' +
-  process.env.MONGO_HOST +
-  '/' +
-  process.env.MONGO_DATABASE;
+  "mongodb+srv://" + username + ":" + password + "@" + host + "/" + database;
 
 mongoose.connect(mongoDB, { useNewUrlParser: true, retryWrites: true });
 
@@ -434,7 +431,10 @@ app.use((err, req, res, next) => {
 });
 // // -------------------------------------
 
+// 监听端口
+app.listen(3000);
+console.log("网站服务器启动成功，请访问localhost");
 
-const listener = app.listen(process.env.PORT || 3000, function () {
-  console.log("Your app is listening on port " + 3000);
-});
+// const listener = app.listen(3000, function () {
+//   console.log("Your app is listening on port " + 3000);
+// });
