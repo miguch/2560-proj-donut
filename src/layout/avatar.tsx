@@ -77,7 +77,7 @@ export default function Avatar() {
             field: 'type',
           },
         ].map(({ label, field }) => (
-          <div>
+          <div key={field}>
             {label}: <b>{(user as any)[field]}</b>
           </div>
         ))}

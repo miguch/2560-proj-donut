@@ -1,11 +1,25 @@
 import { Alert, Button, Spin } from '@arco-design/web-react';
 import useUser from '../hooks/useUser';
 import useFetch from '../hooks/useFetch';
-import { LayoutContainer } from './layout.style';
+import { LayoutContainer, MainContainer } from './layout.style';
 import Header from './header';
+import {
+  Outlet,
+  Route,
+  RouterProvider,
+  Routes,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 
 export default function Layout() {
   const { user, error, isLoading } = useUser();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  if (!user?.type && location.pathname !== '/onboarding') {
+    navigate('/onboarding');
+  }
 
   const fetcher = useFetch();
 
@@ -14,6 +28,9 @@ export default function Layout() {
       <LayoutContainer>
         <Header></Header>
         {error && <Alert type="error" title={error.message}></Alert>}
+        <MainContainer>
+          <Outlet />
+        </MainContainer>
       </LayoutContainer>
     </Spin>
   );

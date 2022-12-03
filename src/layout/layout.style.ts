@@ -32,3 +32,9 @@ export const AvatarContainer = styled.div`
   line-height: 2.5rem;
   margin-left: 1rem;
 `;
+
+export const MainContainer = styled.div`
+  margin: 0 auto;
+  padding: 12px 6%;
+  max-width: 1200px;
+`;
