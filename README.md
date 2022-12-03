@@ -1,5 +1,7 @@
 # 2560 Final Project 
-> This is yiming's branch for prof module.
+> This is yiming's branch for express backend.
+
+
 
 Qisheng Ye  qiy48
 
@@ -14,12 +16,18 @@ Mingtao Chen mic148
 Set the following env var before starting:
 - 
 
-## Development
+## Start exporess  backend
 
-Use the following command to start the server and frontend
 ```
-npm run dev
+npm i
+npm start
 ```
+> glitch repo: https://glitch.com/~closed-outstanding-helicopter
 
+## Postman APIs
+import  this config file to your post to test all APIs.
+```
+CourseSystem.postman_collection.json
+```
 
 
