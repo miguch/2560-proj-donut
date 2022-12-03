@@ -5,6 +5,7 @@ specifiers:
   dotenv: ^16.0.3
   ejs: ^3.1.8
   express: ^4.18.2
+  joi: ^17.7.0
   mongoose: ^5.2.4
   passport: ^0.6.0
   passport-custom: ^1.1.1
@@ -15,12 +16,47 @@ dependencies:
   dotenv: registry.npmmirror.com/dotenv/16.0.3
   ejs: registry.npmmirror.com/ejs/3.1.8
   express: registry.npmmirror.com/express/4.18.2
+  joi: registry.npmmirror.com/joi/17.7.0
   mongoose: registry.npmmirror.com/mongoose/5.13.15
   passport: registry.npmmirror.com/passport/0.6.0
   passport-custom: registry.npmmirror.com/passport-custom/1.1.1
   passport-github: registry.npmmirror.com/passport-github/1.1.0
 
 packages:
+
+  registry.npmmirror.com/@hapi/hoek/9.3.0:
+    resolution: {integrity: sha512-/c6rf4UJlmHlC9b5BaNvzAcFv7HZ2QHaV0D4/HNlBdvFnvQq8RI4kYdhyPCl7Xj+oWvTWQ8ujhqS53LIgAe6KQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@hapi/hoek/-/hoek-9.3.0.tgz}
+    name: '@hapi/hoek'
+    version: 9.3.0
+    dev: false
+
+  registry.npmmirror.com/@hapi/topo/5.1.0:
+    resolution: {integrity: sha512-foQZKJig7Ob0BMAYBfcJk8d77QtOe7Wo4ox7ff1lQYoNNAb6jwcY1ncdoy2e9wQZzvNy7ODZCYJkK8kzmcAnAg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@hapi/topo/-/topo-5.1.0.tgz}
+    name: '@hapi/topo'
+    version: 5.1.0
+    dependencies:
+      '@hapi/hoek': registry.npmmirror.com/@hapi/hoek/9.3.0
+    dev: false
+
+  registry.npmmirror.com/@sideway/address/4.1.4:
+    resolution: {integrity: sha512-7vwq+rOHVWjyXxVlR76Agnvhy8I9rpzjosTESvmhNeXOXdZZB15Fl+TI9x1SiHZH5Jv2wTGduSxFDIaq0m3DUw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@sideway/address/-/address-4.1.4.tgz}
+    name: '@sideway/address'
+    version: 4.1.4
+    dependencies:
+      '@hapi/hoek': registry.npmmirror.com/@hapi/hoek/9.3.0
+    dev: false
+
+  registry.npmmirror.com/@sideway/formula/3.0.0:
+    resolution: {integrity: sha512-vHe7wZ4NOXVfkoRb8T5otiENVlT7a3IAiw7H5M2+GO+9CDgcVUUsX1zalAztCmwyOr2RUTGJdgB+ZvSVqmdHmg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@sideway/formula/-/formula-3.0.0.tgz}
+    name: '@sideway/formula'
+    version: 3.0.0
+    dev: false
+
+  registry.npmmirror.com/@sideway/pinpoint/2.0.0:
+    resolution: {integrity: sha512-RNiOoTPkptFtSVzQevY/yWtZwf/RxyVnPy/OcA9HBM3MlGDnBEYL5B41H0MTn0Uec8Hi+2qUtTfG2WWZBmMejQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@sideway/pinpoint/-/pinpoint-2.0.0.tgz}
+    name: '@sideway/pinpoint'
+    version: 2.0.0
+    dev: false
 
   registry.npmmirror.com/@types/bson/4.0.5:
     resolution: {integrity: sha512-vVLwMUqhYJSQ/WKcE60eFqcyuWse5fGH+NMAXHuKrUAPoryq3ATxk5o4bgYNtg5aOM4APVg7Hnb3ASqUYG0PKg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/bson/-/bson-4.0.5.tgz}
@@ -503,6 +539,18 @@ packages:
       chalk: registry.npmmirror.com/chalk/4.1.2
       filelist: registry.npmmirror.com/filelist/1.0.4
       minimatch: registry.npmmirror.com/minimatch/3.1.2
+    dev: false
+
+  registry.npmmirror.com/joi/17.7.0:
+    resolution: {integrity: sha512-1/ugc8djfn93rTE3WRKdCzGGt/EtiYKxITMO4Wiv6q5JL1gl9ePt4kBsl1S499nbosspfctIQTpYIhSmHA3WAg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/joi/-/joi-17.7.0.tgz}
+    name: joi
+    version: 17.7.0
+    dependencies:
+      '@hapi/hoek': registry.npmmirror.com/@hapi/hoek/9.3.0
+      '@hapi/topo': registry.npmmirror.com/@hapi/topo/5.1.0
+      '@sideway/address': registry.npmmirror.com/@sideway/address/4.1.4
+      '@sideway/formula': registry.npmmirror.com/@sideway/formula/3.0.0
+      '@sideway/pinpoint': registry.npmmirror.com/@sideway/pinpoint/2.0.0
     dev: false
 
   registry.npmmirror.com/kareem/2.3.2:

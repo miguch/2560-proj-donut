@@ -4,6 +4,7 @@ const GithubStrategy = require('passport-github').Strategy;
 const CustomStrategy = require('passport-custom').Strategy;
 const crypto = require('crypto');
 const userSchema = require('../schema/user');
+const {signupValidation, loginValidation} = require('../validation/user')
 
 function registerPassport(app) {
   app.use(
@@ -108,7 +109,7 @@ function hashPasswd(pass, salt) {
 
 api.post('/signup', async (req, res, next) => {
   const newUser = req.body;
-  const { error, value } = userSchema.signupValidation.validate(newUser);
+  const { error, value } = signupValidation.validate(newUser);
 
   if (error) {
     res.status(422);
@@ -117,10 +118,10 @@ api.post('/signup', async (req, res, next) => {
     });
     return;
   }
-  const nameItem = await userSchema.mongo.find({
+  const nameItem = await userSchema.find({
     $or: [{ username: newUser.username }],
   });
-  const emailItem = await userSchema.mongo.find({
+  const emailItem = await userSchema.find({
     $or: [{ email: newUser.email }],
   });
 
