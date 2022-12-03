@@ -3,8 +3,12 @@ const passport = require('passport');
 const GithubStrategy = require('passport-github').Strategy;
 const CustomStrategy = require('passport-custom').Strategy;
 const crypto = require('crypto');
-const userSchema = require('../schema/user');
-const {signupValidation, loginValidation} = require('../validation/user')
+const student = require('../schema/student.js');
+const teacher = require('../schema/teacher.js');
+const teacherUser = require('../schema/teacherUser.js');
+const studentUser = require('../schema/studentUser.js');
+const permissions = require('./permissions');
+const { signupValidation, loginValidation } = require('../validation/user');
 
 function registerPassport(app) {
   app.use(
@@ -48,16 +52,21 @@ function registerPassport(app) {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(async (req, res, next) => {
-    // check user credential
+    // authentication middleware
     console.log(req.path, req.query);
-    if (req.path.startsWith('/login') || req.path.startsWith('/logoff')) {
-      return next();
+    if (req.path in permissions && permissions[req.path].length > 0) {
+      if (
+        req.isAuthenticated() &&
+        req.user &&
+        permissions[req.path].includes(req.user.type)
+      ) {
+        return next();
+      }
+      res.status(401);
+      res.end();
+      return;
     }
-    if (req.isAuthenticated() && req.user) {
-      return next();
-    }
-    res.status(401);
-    res.end();
+    return next();
   });
 }
 
@@ -118,39 +127,44 @@ api.post('/signup', async (req, res, next) => {
     });
     return;
   }
-  const nameItem = await userSchema.find({
-    $or: [{ username: newUser.username }],
-  });
-  const emailItem = await userSchema.find({
-    $or: [{ email: newUser.email }],
-  });
 
-  if (nameItem.length > 0) {
-    res.json({
-      status: -1,
-      message: 'username is already in use',
-    });
-  }
-  if (emailItem.length > 0) {
-    res.json({
-      status: -1,
-      message: 'email is already in use',
-    });
+  let accountItem;
+  if (identity === 'student') {
+    accountItem = await student.findOne({ student_id: newUser.username });
+    if (!accountItem) {
+      res.json({
+        status: -1,
+        message: 'cannot find student info associated with ' + username,
+      });
+      return;
+    }
+  } else {
+    accountItem = await teacher.findOne({ teacher_id: newUser.username });
+    if (!accountItem) {
+      res.json({
+        status: -1,
+        message: 'cannot find teacher info associated with ' + username,
+      });
+      return;
+    }
   }
 
   const { key, salt } = await hashPasswd(newUser.password);
 
-  const newUserItem = new userSchema.mongo({
-    ...newUser,
-    salt,
+  const newAccount = {
+    username: accountItem._id,
     password: key,
-    avatar: '/default.png',
-  });
+    salt,
+  };
+  const userItem = await (newUser.identity === 'teacher'
+    ? teacherUser
+    : studentUser
+  ).create(newAccount);
 
-  await newUserItem.save();
-
-  req.login(newUserItem, function(err) {
-    if (err) { return next(err); }
+  req.login({ ...accountItem, username: newUser.username }, function (err) {
+    if (err) {
+      return next(err);
+    }
     res.json({
       status: 200,
     });
@@ -159,7 +173,7 @@ api.post('/signup', async (req, res, next) => {
 
 api.post('/local', async (req, res, next) => {
   const info = req.body;
-  const { error, value } = userSchema.loginValidation.validate(info);
+  const { error, value } = loginValidation.validate(info);
 
   if (error) {
     res.status(422);
@@ -168,10 +182,45 @@ api.post('/local', async (req, res, next) => {
     });
     return;
   }
-  const item = await userSchema.mongo.findOne({
-    $or: [{ email: info.email }, { username: info.username }],
-  });
-  if (!item) {
+
+  let userItem;
+  let accountItem = {};
+  if (info.identity === 'student') {
+    accountItem = await student.findOne({ student_id: info.username });
+    if (!userItem) {
+      res.json({
+        status: -1,
+        message: 'username or password incorrect',
+      });
+      return;
+    }
+    userItem = await studentUser.findOne({
+      username: accountItem._id,
+    });
+  } else if (info.identity === 'teacher') {
+    accountItem = await teacher.findOne({ teacher_id: info.username });
+    if (!userItem) {
+      res.json({
+        status: -1,
+        message: 'username or password incorrect',
+      });
+      return;
+    }
+    userItem = await teacherUser.findOne({
+      username: accountItem._id,
+    });
+  } else if (info.identity === 'admin') {
+    if (
+      info.username === process.env.ADMIN_NAME &&
+      info.password === process.env.ADMIN_PASS
+    ) {
+      userItem = {
+        type: 'admin'
+      };
+    }
+  }
+
+  if (!userItem) {
     res.json({
       status: -1,
       message: 'username or password incorrect',
@@ -179,8 +228,8 @@ api.post('/local', async (req, res, next) => {
     return;
   }
 
-  const { key, salt } = await hashPasswd(info.password, item.salt);
-  if (key.compare(item.password) !== 0) {
+  const { key, salt } = await hashPasswd(info.password, userItem.salt);
+  if (key.compare(userItem.password) !== 0) {
     res.json({
       status: -1,
       message: 'username or password incorrect',
@@ -188,12 +237,29 @@ api.post('/local', async (req, res, next) => {
     return;
   }
 
-  req.login(item, function(err) {
-    if (err) { return next(err); }
+  // TODO: add student/teacher info
+  req.login({
+    ...accountItem,
+    username: info.username,
+    type: info.identity
+  }, function (err) {
+    if (err) {
+      return next(err);
+    }
     res.json({
       status: 200,
     });
   });
+});
+
+api.get('/logoff', function (req, res) {
+  if (req.logout) {
+    req.logout(() => {});
+  } else {
+    req.session.destroy();
+  }
+  res.end();
+  // res.redirect('/');
 });
 
 module.exports = {

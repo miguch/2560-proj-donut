@@ -18,9 +18,13 @@ const app = express();
 const fs = require("fs");
 
 const cors = require('cors');
+const {registerPassport, loginApi} = require('./modules/auth')
 
 app.use(express.json());
 app.use(cors());
+
+registerPassport(app)
+// app.use('/auth', loginApi)
 
 const mongoose = require("mongoose");
 
@@ -40,7 +44,6 @@ const course = require("./schema/course.js");
 const student = require("./schema/student.js");
 const teacher = require("./schema/teacher.js");
 const selection = require("./schema/selection.js");
-const user = require("./schema/user.js");
 const teacherUser = require("./schema/teacherUser.js");
 const studentUser = require("./schema/studentUser.js");
 

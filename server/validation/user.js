@@ -7,17 +7,13 @@ const LINK_REGEX =
 
 const signupValidation = Joi.object({
   username: Joi.string().required(),
-  displayName: Joi.string().required(),
-  email: Joi.string()
-    .regex(EMAIL_REGEX)
-    .message('Please enter valid email address')
-    .required(),
-  password: Joi.string(),
-  type: Joi.string().valid('student', 'instructor').required(),
+  password: Joi.string().required(),
+  identity: Joi.string().valid("teacher", 'student').required()
 });
 const loginValidation = Joi.object({
   username: Joi.string().required(),
   password: Joi.string().required(),
+  identity: Joi.string().valid("teacher", 'student', 'admin').required()
 });
 
 module.exports = {
