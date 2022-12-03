@@ -1,0 +1,450 @@
+{
+	"info": {
+		"_postman_id": "358eb442-bcee-48ef-b5a3-3cd8d4e20785",
+		"name": "CourseSystem",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23882790"
+	},
+	"item": [
+		{
+			"name": "insert teacher",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n       \"teacher_id\": \"1204\",\n       \"teacher_name\":\"Steven Lee\",\n       \"department\": \"Computer Science\",\n        \"position\": \"Associate Prof\"\n\n}"
+				},
+				"url": {
+					"raw": "https://closed-outstanding-helicopter.glitch.me/teacheradded",
+					"protocol": "https",
+					"host": [
+						"closed-outstanding-helicopter",
+						"glitch",
+						"me"
+					],
+					"path": [
+						"teacheradded"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "insert student",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n       \"student_id\": \"19120003\",\n       \"student_name\":\"Yifei\",\n       \"gender\": \"Male\",\n       \"age\": 24,\n       \"department\": \"Computer and Information Science\"\n}"
+				},
+				"url": {
+					"raw": "https://closed-outstanding-helicopter.glitch.me/studentadded",
+					"protocol": "https",
+					"host": [
+						"closed-outstanding-helicopter",
+						"glitch",
+						"me"
+					],
+					"path": [
+						"studentadded"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get courses by teacher_id",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": " {\n        \n        \"student_id\": \"1201\"\n       \n}"
+				},
+				"url": {
+					"raw": "https://closed-outstanding-helicopter.glitch.me/mylesson",
+					"protocol": "https",
+					"host": [
+						"closed-outstanding-helicopter",
+						"glitch",
+						"me"
+					],
+					"path": [
+						"mylesson"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "insert course",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"course_id\" : \"INFSCI2430\",\n    \"course_name\": \"Information Visualization\", \n    \"credit\": 3, \n    \"department\": \"Information Science\", \n    \"teacher_id\": \"1201\"\n}"
+				},
+				"url": {
+					"raw": "https://closed-outstanding-helicopter.glitch.me/courseadded",
+					"protocol": "https",
+					"host": [
+						"closed-outstanding-helicopter",
+						"glitch",
+						"me"
+					],
+					"path": [
+						"courseadded"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all courses",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://closed-outstanding-helicopter.glitch.me/course",
+					"protocol": "https",
+					"host": [
+						"closed-outstanding-helicopter",
+						"glitch",
+						"me"
+					],
+					"path": [
+						"course"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all teachers",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://closed-outstanding-helicopter.glitch.me/teacher",
+					"protocol": "https",
+					"host": [
+						"closed-outstanding-helicopter",
+						"glitch",
+						"me"
+					],
+					"path": [
+						"teacher"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all users",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://closed-outstanding-helicopter.glitch.me/account",
+					"protocol": "https",
+					"host": [
+						"closed-outstanding-helicopter",
+						"glitch",
+						"me"
+					],
+					"path": [
+						"account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "insert account",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n       \"username\": \"19120001\",\n       \"password\":\"123456\",\n       \"identity\": \"student\"\n}"
+				},
+				"url": {
+					"raw": "https://closed-outstanding-helicopter.glitch.me/account",
+					"protocol": "https",
+					"host": [
+						"closed-outstanding-helicopter",
+						"glitch",
+						"me"
+					],
+					"path": [
+						"account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n       \"username\": \"1201\",\n       \"password\":\"123456\",\n       \"identity\": \"teacher\"\n}"
+				},
+				"url": {
+					"raw": "https://closed-outstanding-helicopter.glitch.me/login",
+					"protocol": "https",
+					"host": [
+						"closed-outstanding-helicopter",
+						"glitch",
+						"me"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add selection",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"course_id\": \"INFSCI2430\",\n    \"student_id\": \"19120001\"\n    \n}"
+				},
+				"url": {
+					"raw": "https://closed-outstanding-helicopter.glitch.me/xuanke",
+					"protocol": "https",
+					"host": [
+						"closed-outstanding-helicopter",
+						"glitch",
+						"me"
+					],
+					"path": [
+						"xuanke"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all student",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://closed-outstanding-helicopter.glitch.me/student",
+					"protocol": "https",
+					"host": [
+						"closed-outstanding-helicopter",
+						"glitch",
+						"me"
+					],
+					"path": [
+						"student"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteClass",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"student_id\": \"19120003\",\n    \"course_id\": \"INFSCI2140\"\n}"
+				},
+				"url": {
+					"raw": "https://closed-outstanding-helicopter.glitch.me/deleteclass",
+					"protocol": "https",
+					"host": [
+						"closed-outstanding-helicopter",
+						"glitch",
+						"me"
+					],
+					"path": [
+						"deleteclass"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "couldchose",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"student_id\": \"19120001\"\n}"
+				},
+				"url": {
+					"raw": "https://closed-outstanding-helicopter.glitch.me/couldchose",
+					"protocol": "https",
+					"host": [
+						"closed-outstanding-helicopter",
+						"glitch",
+						"me"
+					],
+					"path": [
+						"couldchose"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "haveChosen",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"student_id\": \"19120001\"\n}"
+				},
+				"url": {
+					"raw": "https://closed-outstanding-helicopter.glitch.me/havechosen",
+					"protocol": "https",
+					"host": [
+						"closed-outstanding-helicopter",
+						"glitch",
+						"me"
+					],
+					"path": [
+						"havechosen"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get student by course",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"course_id\":\"INFSCI2140\"\n}"
+				},
+				"url": {
+					"raw": "https://closed-outstanding-helicopter.glitch.me/kecheng",
+					"protocol": "https",
+					"host": [
+						"closed-outstanding-helicopter",
+						"glitch",
+						"me"
+					],
+					"path": [
+						"kecheng"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ChangeGrade",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"course_id\":\"INFSCI2140\",\n    \"student_id\": \"19120001\",\n    \"grade\": 80\n}"
+				},
+				"url": {
+					"raw": "https://closed-outstanding-helicopter.glitch.me/changevalue",
+					"protocol": "https",
+					"host": [
+						"closed-outstanding-helicopter",
+						"glitch",
+						"me"
+					],
+					"path": [
+						"changevalue"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
