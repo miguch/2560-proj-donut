@@ -12,6 +12,7 @@ import useForm from '@arco-design/web-react/es/Form/useForm';
 import { IconGithub, IconQuestionCircle } from '@arco-design/web-react/icon';
 import { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useSWRConfig } from 'swr';
 import useFetch from '../../hooks/useFetch';
 import { LoginTitle } from './login.style';
 
@@ -32,6 +33,7 @@ export default function LoginForm({
   const [loginForm] = useForm();
   const navigate = useNavigate();
   const fetcher = useFetch(false);
+  const { cache } = useSWRConfig();
 
   function onGitHubLogin() {
     window.location.href = '/api/auth/github' + location.search;
@@ -61,6 +63,7 @@ export default function LoginForm({
         Message.error(res.message);
         return;
       }
+      (cache as any).clear();
       navigate(query.has('r') ? (query.get('r') as string) : '/');
     } finally {
       setIsSubmitting(false);
@@ -92,6 +95,7 @@ export default function LoginForm({
         Message.error(res.message);
         return;
       }
+      (cache as any).clear();
       navigate(query.has('r') ? (query.get('r') as string) : '/');
     } finally {
       setIsSubmitting(false);

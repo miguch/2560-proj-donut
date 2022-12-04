@@ -19,14 +19,14 @@ export default function Layout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user?.type) {
+    if (user && !user.type) {
       fetch('/api/auth/logoff');
       Message.warning(
         'No associated account, please signup first and link your GitHub account'
       );
       navigate('/login');
     }
-  }, []);
+  }, [user]);
 
   const fetcher = useFetch();
 
