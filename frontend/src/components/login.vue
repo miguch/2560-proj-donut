@@ -56,7 +56,7 @@
 
 <script>
 import "animate.css";
-import axios from "axios";
+import axios from "@/network.js";
 export default {
   data() {
     return {
@@ -73,7 +73,7 @@ export default {
       var that = this;
       axios({
         method: "POST",
-        url: "http://localhost:3000/login",
+        url: "/login",
         headers: {
           key: "Content-Type",
           value: "application/json",

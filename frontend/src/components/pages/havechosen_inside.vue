@@ -107,7 +107,7 @@
   </div>
 </template>
 <script>
-import axios from "axios";
+import axios from "@/network.js";
 export default {
   props: ["item", "upload"],
   data() {
@@ -124,7 +124,7 @@ export default {
       var that = this;
       axios({
         method: "POST",
-        url: "http://localhost:3000/xuanke",
+        url: "/xuanke",
         headers: {
           key: "Content-Type",
           value: "application/json",
@@ -157,7 +157,7 @@ export default {
       var that = this;
       axios({
         method: "POST",
-        url: "http://localhost:3000/deleteclass",
+        url: "/deleteclass",
         headers: {
           key: "Content-Type",
           value: "application/json",
