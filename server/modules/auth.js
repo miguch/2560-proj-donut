@@ -116,6 +116,13 @@ function hashPasswd(pass, salt) {
   });
 }
 
+api.get("/user", (req, res, next) => {
+  res.json({
+    status: 200,
+    data: req.user
+  })
+})
+
 api.post('/signup', async (req, res, next) => {
   const newUser = req.body;
   const { error, value } = signupValidation.validate(newUser);

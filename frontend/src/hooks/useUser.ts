@@ -10,7 +10,7 @@ export default function useUser(): {
 } {
   const fetcher = useFetch();
   const { data, error } = useSWR(
-    '/api/user',
+    '/api/auth/user',
     fetcher
   );
 
