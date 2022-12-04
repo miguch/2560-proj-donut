@@ -10,6 +10,7 @@ specifiers:
   ejs: ^3.1.8
   element-ui: ^2.15
   express: ^4.18.2
+  express-async-errors: ^3.1.1
   express-session: ^1.17.3
   glob: ^8.0.3
   joi: ^17.7.0
@@ -34,6 +35,7 @@ dependencies:
   ejs: registry.npmmirror.com/ejs/3.1.8
   element-ui: registry.npmmirror.com/element-ui/2.15.12_vue@2.7.14
   express: registry.npmmirror.com/express/4.18.2
+  express-async-errors: registry.npmmirror.com/express-async-errors/3.1.1_express@4.18.2
   express-session: registry.npmmirror.com/express-session/1.17.3
   glob: registry.npmmirror.com/glob/8.0.3
   joi: registry.npmmirror.com/joi/17.7.0
@@ -889,6 +891,17 @@ packages:
     name: etag
     version: 1.8.1
     engines: {node: '>= 0.6'}
+    dev: false
+
+  registry.npmmirror.com/express-async-errors/3.1.1_express@4.18.2:
+    resolution: {integrity: sha512-h6aK1da4tpqWSbyCa3FxB/V6Ehd4EEB15zyQq9qe75OZBp0krinNKuH4rAY+S/U/2I36vdLAUFSjQJ+TFmODng==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/express-async-errors/-/express-async-errors-3.1.1.tgz}
+    id: registry.npmmirror.com/express-async-errors/3.1.1
+    name: express-async-errors
+    version: 3.1.1
+    peerDependencies:
+      express: ^4.16.2
+    dependencies:
+      express: registry.npmmirror.com/express/4.18.2
     dev: false
 
   registry.npmmirror.com/express-session/1.17.3:
