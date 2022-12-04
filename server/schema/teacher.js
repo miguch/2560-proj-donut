@@ -6,7 +6,5 @@ const teacherSchema = new Schema({
     "teacher_name": {type: String},
     "department": {type: String},
     "position": {type: String},
-  
-  
 })
 module.exports = mongoose.model("teacher", teacherSchema);
