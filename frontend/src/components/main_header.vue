@@ -15,9 +15,9 @@
 </template>
 
 <script>
-import header_main_menu_search  from './header_main_menu_search'
-import header_menu_toggler from './header_menu_toggler'
-import header_rightbar_icon from './header_rightbar_icon'
+import header_main_menu_search  from './header_main_menu_search.vue'
+import header_menu_toggler from './header_menu_toggler.vue'
+import header_rightbar_icon from './header_rightbar_icon.vue'
 export default{
       components:{
             header_menu_toggler,

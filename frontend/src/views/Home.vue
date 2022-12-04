@@ -13,9 +13,9 @@
 
 <script>
 // @ is an alias to /src
-import main_body from "../components/main_body";
-import main_header from "../components/main_header";
-import sidebar from "../components/sidebar";
+import main_body from "../components/main_body.vue";
+import main_header from "../components/main_header.vue";
+import sidebar from "../components/sidebar.vue";
 
 export default {
   name: "Home",

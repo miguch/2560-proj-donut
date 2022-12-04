@@ -224,7 +224,7 @@ const routes = [
     path: "/",
     name: "login_must",
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/login_must"),
+      import(/* webpackChunkName: "about" */ "../views/login_must.vue"),
   },
 ];
 
