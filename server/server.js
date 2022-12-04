@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(cors());
 
 registerPassport(app)
-// app.use('/auth', loginApi)
+app.use('/auth', loginApi)
 
 const mongoose = require("mongoose");
 

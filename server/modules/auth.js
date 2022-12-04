@@ -161,14 +161,17 @@ api.post('/signup', async (req, res, next) => {
     : studentUser
   ).create(newAccount);
 
-  req.login({ ...accountItem, username: newUser.username }, function (err) {
-    if (err) {
-      return next(err);
+  req.login(
+    { ...accountItem, username: newUser.username, type: newUser.identity },
+    function (err) {
+      if (err) {
+        return next(err);
+      }
+      res.json({
+        status: 200,
+      });
     }
-    res.json({
-      status: 200,
-    });
-  });
+  );
 });
 
 api.post('/local', async (req, res, next) => {
@@ -215,7 +218,7 @@ api.post('/local', async (req, res, next) => {
       info.password === process.env.ADMIN_PASS
     ) {
       userItem = {
-        type: 'admin'
+        type: 'admin',
       };
     }
   }
@@ -238,18 +241,21 @@ api.post('/local', async (req, res, next) => {
   }
 
   // TODO: add student/teacher info
-  req.login({
-    ...accountItem,
-    username: info.username,
-    type: info.identity
-  }, function (err) {
-    if (err) {
-      return next(err);
+  req.login(
+    {
+      ...accountItem,
+      username: info.username,
+      type: info.identity,
+    },
+    function (err) {
+      if (err) {
+        return next(err);
+      }
+      res.json({
+        status: 200,
+      });
     }
-    res.json({
-      status: 200,
-    });
-  });
+  );
 });
 
 api.get('/logoff', function (req, res) {
