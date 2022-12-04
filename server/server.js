@@ -14,6 +14,7 @@
 // app.use(session({ secret: "secret key" }));
 // app.use(express.json());
 const express = require("express");
+require('express-async-errors');
 const app = express();
 const fs = require("fs");
 
@@ -428,19 +429,27 @@ app.post("/courseadded", async function (request, response) {
   response.send(res);
 });
 
+app.all('*', (req, res) => {
+  res.status(404);
+  res.send('not found');
+});
+
 //-------------------------------------
 //handling middleware error
-
 app.use((err, req, res, next) => {
-  const result = JSON.parse(err);
-  let params = [];
-  for (let attr in result) {
-    if (attr != "path") {
-      params.push(attr + "=" + result[attr]);
-    }
-  }
-  res.redirect(`${result.path}?${params.join("&")}`);
+  console.error(err.stack);
+  res.status(500).send('server error, please try again later');
 });
+// app.use((err, req, res, next) => {
+//   const result = JSON.parse(err);
+//   let params = [];
+//   for (let attr in result) {
+//     if (attr != "path") {
+//       params.push(attr + "=" + result[attr]);
+//     }
+//   }
+//   res.redirect(`${result.path}?${params.join("&")}`);
+// });
 // // -------------------------------------
 
 
