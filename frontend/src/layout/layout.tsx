@@ -1,4 +1,4 @@
-import { Alert, Button, Spin } from '@arco-design/web-react';
+import { Alert, Button, Message, Spin } from '@arco-design/web-react';
 import useUser from '../hooks/useUser';
 import useFetch from '../hooks/useFetch';
 import { LayoutContainer, MainContainer } from './layout.style';
@@ -11,15 +11,22 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
+import { useEffect } from 'react';
 
 export default function Layout() {
   const { user, error, isLoading } = useUser();
   const location = useLocation();
   const navigate = useNavigate();
 
-  if (!user?.type && location.pathname !== '/onboarding') {
-    navigate('/onboarding');
-  }
+  useEffect(() => {
+    if (!user?.type) {
+      fetch('/api/auth/logoff');
+      Message.warning(
+        'No associated account, please signup first and link your GitHub account'
+      );
+      navigate('/login');
+    }
+  }, []);
 
   const fetcher = useFetch();
 

@@ -6,7 +6,7 @@ const STATIC_PERMISSIONS = {
   '/login': [],
   '/accountadded': [],
   '/students': [ADMIN],
-  '/auth/user': [ADMIN, TEACHER, STUDENT],
+  '/auth/user': [],
 };
 
 module.exports = STATIC_PERMISSIONS;

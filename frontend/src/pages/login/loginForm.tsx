@@ -34,7 +34,7 @@ export default function LoginForm({
   const fetcher = useFetch(false);
 
   function onGitHubLogin() {
-    window.location.href = '/api/login/github' + location.search;
+    window.location.href = '/api/auth/github' + location.search;
   }
 
   async function onLogin() {

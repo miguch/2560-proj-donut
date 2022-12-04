@@ -22,7 +22,7 @@ export default function Avatar() {
         setShowProfile(true);
         break;
       case 'logoff':
-        await fetch('/api/logoff');
+        await fetch('/api/auth/logoff');
         navigate('/login');
         break;
     }
@@ -63,14 +63,6 @@ export default function Avatar() {
           {
             label: 'Username',
             field: 'username',
-          },
-          {
-            label: 'Name',
-            field: 'displayName',
-          },
-          {
-            label: 'Email',
-            field: 'email',
           },
           {
             label: 'Type',

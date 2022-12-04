@@ -9,13 +9,18 @@ export default function useUser(): {
   error: Error | null;
 } {
   const fetcher = useFetch();
-  const { data, error } = useSWR(
-    '/api/auth/user',
-    fetcher
-  );
+  const { data, error } = useSWR('/api/auth/user', fetcher);
+
+  if (data && data.status !== 200) {
+    return {
+      user: null,
+      isLoading: false,
+      error: new Error(data.message),
+    };
+  }
 
   return {
-    user: data,
+    user: data?.data,
     isLoading: !error && !data,
     error: error,
   };
