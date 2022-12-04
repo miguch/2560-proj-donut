@@ -121,6 +121,13 @@ function hashPasswd(pass, salt) {
 }
 
 api.get('/user', (req, res, next) => {
+  if (!(req.isAuthenticated() && req.user)) {
+    res.status(401);
+    res.json({
+      message: 'user not login',
+    });
+    return;
+  }
   res.json({
     status: 200,
     data: req.user,
@@ -140,7 +147,7 @@ api.post('/signup', async (req, res, next) => {
   }
 
   let accountItem;
-  if (identity === 'student') {
+  if (newUser.identity === 'student') {
     accountItem = await student.findOne({ student_id: newUser.username });
     if (!accountItem) {
       res.json({
