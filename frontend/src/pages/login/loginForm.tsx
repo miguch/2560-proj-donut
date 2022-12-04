@@ -5,10 +5,11 @@ import {
   Input,
   Message,
   Select,
+  Tooltip,
 } from '@arco-design/web-react';
 import useForm from '@arco-design/web-react/es/Form/useForm';
 
-import { IconGithub } from '@arco-design/web-react/icon';
+import { IconGithub, IconQuestionCircle } from '@arco-design/web-react/icon';
 import { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useFetch from '../../hooks/useFetch';
@@ -52,7 +53,7 @@ export default function LoginForm({
       const postData = {
         ...formValues,
       };
-      const res = await fetcher('/api/login/local', {
+      const res = await fetcher('/api/auth/local', {
         method: 'POST',
         body: JSON.stringify(postData),
       });
@@ -83,7 +84,7 @@ export default function LoginForm({
         ...formValues,
       };
       delete postData.repeat;
-      const res = await fetcher('/api/login/signup', {
+      const res = await fetcher('/api/auth/signup', {
         method: 'POST',
         body: JSON.stringify(postData),
       });
@@ -111,11 +112,23 @@ export default function LoginForm({
           wrapperCol={{ span: 14 }}
         >
           <Form.Item
+            label="Type"
+            field="identity"
+            rules={[{ required: true }]}
+            initialValue="student"
+          >
+            <Select placeholder="Type">
+              <Select.Option value="student">Student</Select.Option>
+              <Select.Option value="teacher">Instructor</Select.Option>{' '}
+              <Select.Option value="admin">Admin</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
             label="Username"
             field="username"
             rules={[{ required: true }]}
           >
-            <Input placeholder="username / email"></Input>
+            <Input placeholder="username"></Input>
           </Form.Item>
 
           <Form.Item
@@ -148,7 +161,7 @@ export default function LoginForm({
         >
           <Form.Item
             label="Type"
-            field="type"
+            field="identity"
             rules={[{ required: true }]}
             initialValue="student"
           >
@@ -158,34 +171,25 @@ export default function LoginForm({
             </Select>
           </Form.Item>
           <Form.Item
-            label="Username"
+            label={
+              <Tooltip
+                mini
+                content="Contact your admin if you don't know your username"
+              >
+                Username
+                <IconQuestionCircle
+                  style={{
+                    verticalAlign: 'middle',
+                    marginLeft: '2px',
+                    color: 'var(--color-text-3)',
+                  }}
+                ></IconQuestionCircle>
+              </Tooltip>
+            }
             field="username"
             rules={[{ required: true }]}
           >
             <Input placeholder="username"></Input>
-          </Form.Item>
-
-          <Form.Item
-            label="Email"
-            field="email"
-            rules={[
-              { required: true },
-              {
-                match:
-                  /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/,
-                message: 'Please enter valid email',
-              },
-            ]}
-          >
-            <Input placeholder="email"></Input>
-          </Form.Item>
-
-          <Form.Item
-            label="Name"
-            field="displayName"
-            rules={[{ required: true }]}
-          >
-            <Input placeholder="name"></Input>
           </Form.Item>
 
           <Form.Item

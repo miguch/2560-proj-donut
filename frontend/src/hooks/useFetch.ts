@@ -33,6 +33,10 @@ export default function useFetch(auth = true) {
       } catch {
         return res.text();
       }
+    }).catch(e => {
+      console.error(e);
+      Message.error('request failed');
+      throw e
     });
   return fetcher;
 }

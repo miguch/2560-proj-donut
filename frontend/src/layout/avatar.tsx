@@ -45,7 +45,7 @@ export default function Avatar() {
         <Image
           alt="user avatar"
           preview={false}
-          src={user!.avatar}
+          src={user!.avatar || 'default.png'}
           style={{ cursor: 'pointer' }}
           width="100%"
         ></Image>
@@ -58,7 +58,7 @@ export default function Avatar() {
         visible={showProfile}
         style={{ textAlign: 'center', maxWidth: '80%' }}
       >
-        <Image src={user?.avatar} width="50px" height="50px"></Image>
+        <Image src={user?.avatar || 'default.png'} width="50px" height="50px"></Image>
         {[
           {
             label: 'Username',
