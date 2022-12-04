@@ -40,13 +40,13 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from "@/network.js";
 export default {
   mounted() {
     var that = this;
     axios({
       method: "POST",
-      url: "http://localhost:3000/account",
+      url: "/account",
       headers: {
         key: "Content-Type",
         value: "application/json",
@@ -70,7 +70,7 @@ export default {
       var that = this;
       axios({
         method: "POST",
-        url: "http://localhost:3000/accountadded",
+        url: "/accountadded",
         headers: {
           key: "Content-Type",
           value: "application/json",

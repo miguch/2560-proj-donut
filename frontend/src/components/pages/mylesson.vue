@@ -15,7 +15,7 @@
   </div>
 </template>
 <script>
-import axios from "axios";
+import axios from "@/network.js";
 import mylesson_inside from "./mylesson_inside";
 export default {
   components: {
@@ -33,7 +33,7 @@ export default {
       var that = this;
       axios({
         method: "POST",
-        url: "http://localhost:3000/mylesson",
+        url: "/mylesson",
         headers: {
           key: "Content-Type",
           value: "application/json",
@@ -51,7 +51,7 @@ export default {
     var that = this;
     axios({
       method: "POST",
-      url: "http://localhost:3000/mylesson",
+      url: "/mylesson",
       headers: {
         key: "Content-Type",
         value: "application/json",

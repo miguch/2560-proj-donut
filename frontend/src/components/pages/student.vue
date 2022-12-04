@@ -48,13 +48,13 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from "@/network.js";
 export default {
   mounted() {
     var that = this;
     axios({
       method: "POST",
-      url: "http://localhost:3000/student",
+      url: "/student",
       headers: {
         key: "Content-Type",
         value: "application/json",
@@ -77,7 +77,7 @@ export default {
       var that = this;
       axios({
         method: "POST",
-        url: "http://localhost:3000/studentadded",
+        url: "/studentadded",
         headers: {
           key: "Content-Type",
           value: "application/json",

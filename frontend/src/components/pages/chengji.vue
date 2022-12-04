@@ -21,7 +21,7 @@
   </div>
 </template>
 <script>
-import axios from "axios";
+import axios from "@/network.js";
 // import chengji_inside from "./chengji_inside";
 
 export default {
@@ -40,7 +40,7 @@ export default {
     var that = this;
     axios({
       method: "POST",
-      url: "http://localhost:3000/chengji",
+      url: "/chengji",
       headers: {
         key: "Content-Type",
         value: "application/json",
