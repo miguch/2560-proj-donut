@@ -323,7 +323,7 @@ app.post("/accountadded", async function (request, response) {
   }
 });
 
-app.post("/student", async function (request, response) {
+app.get("/student", async function (request, response) {
   const student_list = await student.find({});
   console.log(student_list);
   if (!student_list) {
@@ -351,7 +351,7 @@ app.post("/mylesson", async function (request, response) {
 });
 
 //add new student
-app.post("/studentadded", async function (request, response) {
+app.put("/student", async function (request, response) {
   const { student_id, student_name, gender, age, department, fee } =
     request.body;
   const newStu = {
@@ -360,9 +360,44 @@ app.post("/studentadded", async function (request, response) {
     gender,
     age,
     department,
+    fee
   };
   console.log(newStu);
   const res = await student.create(newStu);
+
+  if (!res) {
+    response.status(500);
+    response.send("insert error");
+    return;
+  }
+  console.log("save successfully：" + res);
+  response.send(res);
+});
+
+// update student
+app.post("/student", async function (request, response) {
+  const { _id, student_id, student_name, gender, age, department, fee } =
+    request.body;
+  const item = await student.findOne({
+    _id: _id
+  })
+  if (!item) {
+    response.status(404);
+    response.json({
+      message: 'not found'
+    })
+    return
+  }
+  const newStu = {
+    student_id,
+    student_name,
+    gender,
+    age,
+    department,
+    fee
+  };
+  console.log(newStu);
+  const res = await item.update(newStu);
 
   if (!res) {
     response.send("insert error");
