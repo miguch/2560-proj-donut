@@ -408,12 +408,12 @@ app.post("/student", async function (request, response) {
 });
 
 //get teacher information
-app.post("/teacher", async function (request, response) {
+app.get("/teacher", async function (request, response) {
   const teacher_list = await teacher.find({});
   console.log(teacher_list);
   if (!teacher_list) {
     response.json({
-      exception: "Cannot find students",
+      exception: "Cannot find teachers",
     });
     return;
   }
@@ -421,7 +421,7 @@ app.post("/teacher", async function (request, response) {
 });
 
 //add teacher information
-app.post("/teacheradded", async function (request, response) {
+app.put("/teacher", async function (request, response) {
   const { teacher_id, teacher_name, department, position } = request.body;
   const newTeacher = {
     teacher_id,
@@ -431,6 +431,36 @@ app.post("/teacheradded", async function (request, response) {
   };
   console.log(newTeacher);
   const res = await teacher.create(newTeacher);
+
+  if (!res) {
+    res.send("insert error");
+    return;
+  }
+  console.log("save successfully：" + res);
+  response.send(res);
+});
+
+// update teacher information
+app.post("/teacher", async function (request, response) {
+  const { _id, teacher_id, teacher_name, department, position } = request.body;
+  const item = await teacher.findOne({
+    _id: _id
+  })
+  if (!item) {
+    response.status(404);
+    response.json({
+      message: 'not found'
+    })
+    return
+  }
+  const newTeacher = {
+    teacher_id,
+    teacher_name,
+    department,
+    position,
+  };
+  console.log(newTeacher);
+  const res = await item.update(newTeacher);
 
   if (!res) {
     res.send("insert error");

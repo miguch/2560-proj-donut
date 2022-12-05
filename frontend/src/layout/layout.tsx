@@ -11,9 +11,9 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
-export default function Layout() {
+export default function Layout({children}: {children?: JSX.Element}) {
   const { user, error, isLoading } = useUser();
   const location = useLocation();
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ export default function Layout() {
         <Header></Header>
         {error && <Alert type="error" title={error.message}></Alert>}
         <MainContainer>
-          <Outlet />
+          {children ? children : <Outlet></Outlet>}
         </MainContainer>
       </LayoutContainer>
     </Spin>
