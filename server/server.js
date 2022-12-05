@@ -14,6 +14,7 @@
 // app.use(session({ secret: "secret key" }));
 // app.use(express.json());
 const express = require("express");
+require('express-async-errors');
 const app = express();
 const fs = require("fs");
 
@@ -175,6 +176,8 @@ app.post("/chengji", async function (request, response) {
   response.send(selectionRes);
 });
 
+
+
 //get student from course
 app.post("/kecheng", async function (request, response) {
   let { course_id } = request.body;
@@ -267,6 +270,7 @@ app.post("/course", async function (request, response) {
   response.send(course_list);
 });
 
+
 //find users
 app.post("/account", async function (request, response) {
   const account_student_list = await studentUser.find({}).populate("username");
@@ -319,7 +323,7 @@ app.post("/accountadded", async function (request, response) {
   }
 });
 
-app.post("/student", async function (request, response) {
+app.get("/student", async function (request, response) {
   const student_list = await student.find({});
   console.log(student_list);
   if (!student_list) {
@@ -347,7 +351,7 @@ app.post("/mylesson", async function (request, response) {
 });
 
 //add new student
-app.post("/studentadded", async function (request, response) {
+app.put("/student", async function (request, response) {
   const { student_id, student_name, gender, age, department, fee } =
     request.body;
   const newStu = {
@@ -356,9 +360,44 @@ app.post("/studentadded", async function (request, response) {
     gender,
     age,
     department,
+    fee
   };
   console.log(newStu);
   const res = await student.create(newStu);
+
+  if (!res) {
+    response.status(500);
+    response.send("insert error");
+    return;
+  }
+  console.log("save successfully：" + res);
+  response.send(res);
+});
+
+// update student
+app.post("/student", async function (request, response) {
+  const { _id, student_id, student_name, gender, age, department, fee } =
+    request.body;
+  const item = await student.findOne({
+    _id: _id
+  })
+  if (!item) {
+    response.status(404);
+    response.json({
+      message: 'not found'
+    })
+    return
+  }
+  const newStu = {
+    student_id,
+    student_name,
+    gender,
+    age,
+    department,
+    fee
+  };
+  console.log(newStu);
+  const res = await item.update(newStu);
 
   if (!res) {
     response.send("insert error");
@@ -425,22 +464,30 @@ app.post("/courseadded", async function (request, response) {
   response.send(res);
 });
 
+app.all('*', (req, res) => {
+  res.status(404);
+  res.send('not found');
+});
+
 //-------------------------------------
 //handling middleware error
-
 app.use((err, req, res, next) => {
-  const result = JSON.parse(err);
-  let params = [];
-  for (let attr in result) {
-    if (attr != "path") {
-      params.push(attr + "=" + result[attr]);
-    }
-  }
-  res.redirect(`${result.path}?${params.join("&")}`);
+  console.error(err.stack);
+  res.status(500).send('server error, please try again later');
 });
+// app.use((err, req, res, next) => {
+//   const result = JSON.parse(err);
+//   let params = [];
+//   for (let attr in result) {
+//     if (attr != "path") {
+//       params.push(attr + "=" + result[attr]);
+//     }
+//   }
+//   res.redirect(`${result.path}?${params.join("&")}`);
+// });
 // // -------------------------------------
 
 
-const listener = app.listen(process.env.PORT || 3000, function () {
-  console.log("Your app is listening on port " + 3000);
+const listener = app.listen(parseInt(process.env.PORT || 3000) + 1, function () {
+  console.log("Your app is listening on port " + listener.address().port);
 });

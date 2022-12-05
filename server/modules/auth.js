@@ -28,7 +28,7 @@ function registerPassport(app) {
         callbackURL:
           'https://' +
           process.env.PROJECT_DOMAIN +
-          '.glitch.me/api/login/github/return',
+          '.glitch.me/api/auth/github/return',
       },
       function (accessToken, refreshToken, profile, cb) {
         return cb(null, profile);
@@ -54,17 +54,21 @@ function registerPassport(app) {
   app.use(async (req, res, next) => {
     // authentication middleware
     console.log(req.path, req.query);
+    console.log(permissions);
     if (req.path in permissions && permissions[req.path].length > 0) {
-      if (
-        req.isAuthenticated() &&
-        req.user &&
-        permissions[req.path].includes(req.user.type)
-      ) {
-        return next();
+      if (!(req.isAuthenticated() && req.user)) {
+        res.status(401);
+        res.json({
+          message: 'user not login',
+        });
       }
-      res.status(401);
-      res.end();
-      return;
+      if (!permissions[req.path].includes(req.user.type)) {
+        res.status(401);
+        res.json({
+          message: 'permission denied',
+        });
+      }
+      return next();
     }
     return next();
   });
@@ -116,6 +120,20 @@ function hashPasswd(pass, salt) {
   });
 }
 
+api.get('/user', (req, res, next) => {
+  if (!(req.isAuthenticated() && req.user)) {
+    res.status(401);
+    res.json({
+      message: 'user not login',
+    });
+    return;
+  }
+  res.json({
+    status: 200,
+    data: req.user,
+  });
+});
+
 api.post('/signup', async (req, res, next) => {
   const newUser = req.body;
   const { error, value } = signupValidation.validate(newUser);
@@ -129,7 +147,7 @@ api.post('/signup', async (req, res, next) => {
   }
 
   let accountItem;
-  if (identity === 'student') {
+  if (newUser.identity === 'student') {
     accountItem = await student.findOne({ student_id: newUser.username });
     if (!accountItem) {
       res.json({
@@ -231,13 +249,15 @@ api.post('/local', async (req, res, next) => {
     return;
   }
 
-  const { key, salt } = await hashPasswd(info.password, userItem.salt);
-  if (key.compare(userItem.password) !== 0) {
-    res.json({
-      status: -1,
-      message: 'username or password incorrect',
-    });
-    return;
+  if (info.identity !== 'admin') {
+    const { key, salt } = await hashPasswd(info.password, userItem.salt);
+    if (key.compare(userItem.password) !== 0) {
+      res.json({
+        status: -1,
+        message: 'username or password incorrect',
+      });
+      return;
+    }
   }
 
   // TODO: add student/teacher info
