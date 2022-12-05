@@ -68,7 +68,7 @@ export default function Students() {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   async function load() {
-    setIsLoading(false);
+    setIsLoading(true);
     try {
       const loaded = await fetcher('/api/student');
       setData(loaded);
@@ -108,6 +108,7 @@ export default function Students() {
           rowKey={(item: any) => item._id}
           columns={columns}
           data={data}
+          loading={isLoading}
         ></Table>
       </PageTableContainer>
 

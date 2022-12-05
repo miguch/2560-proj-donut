@@ -58,7 +58,7 @@ export default function Teachers() {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   async function load() {
-    setIsLoading(false);
+    setIsLoading(true);
     try {
       const loaded = await fetcher('/api/teacher');
       setData(loaded);
@@ -78,7 +78,7 @@ export default function Teachers() {
     <PageContainer>
       <PageTitle>
         <Title heading={3} style={{ margin: 0 }}>
-          Students
+          Teachers
         </Title>
         <PageActions>
           <Button
@@ -98,6 +98,7 @@ export default function Teachers() {
           rowKey={(item: any) => item._id}
           columns={columns}
           data={data}
+          loading={isLoading}
         ></Table>
       </PageTableContainer>
 
