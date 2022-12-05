@@ -171,7 +171,7 @@ export default function LoginForm({
           >
             <Select placeholder="Type">
               <Select.Option value="student">Student</Select.Option>
-              <Select.Option value="instructor">Instructor</Select.Option>
+              <Select.Option value="teacher">Instructor</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item

@@ -54,7 +54,6 @@ function registerPassport(app) {
   app.use(async (req, res, next) => {
     // authentication middleware
     console.log(req.path, req.query);
-    console.log(permissions);
     if (req.path in permissions && permissions[req.path].length > 0) {
       if (!(req.isAuthenticated() && req.user)) {
         res.status(401);
@@ -152,7 +151,16 @@ api.post('/signup', async (req, res, next) => {
     if (!accountItem) {
       res.json({
         status: -1,
-        message: 'cannot find student info associated with ' + username,
+        message: 'cannot find student info associated with ID ' + newUser.username,
+      });
+      return;
+    }
+    if (await studentUser.findOne({
+      username: accountItem._id
+    })) {
+      res.json({
+        status: -1,
+        message: 'Student ID already in use',
       });
       return;
     }
@@ -161,7 +169,16 @@ api.post('/signup', async (req, res, next) => {
     if (!accountItem) {
       res.json({
         status: -1,
-        message: 'cannot find teacher info associated with ' + username,
+        message: 'cannot find teacher info associated with ID ' + newUser.username,
+      });
+      return;
+    }
+    if (await teacherUser.findOne({
+      username: accountItem._id
+    })) {
+      res.json({
+        status: -1,
+        message: 'Teacher ID already in use',
       });
       return;
     }
@@ -171,8 +188,8 @@ api.post('/signup', async (req, res, next) => {
 
   const newAccount = {
     username: accountItem._id,
-    password: key,
-    salt,
+    password: key.toString('hex'),
+    salt: salt.toString('hex'),
   };
   const userItem = await (newUser.identity === 'teacher'
     ? teacherUser
@@ -208,7 +225,7 @@ api.post('/local', async (req, res, next) => {
   let accountItem = {};
   if (info.identity === 'student') {
     accountItem = await student.findOne({ student_id: info.username });
-    if (!userItem) {
+    if (!accountItem) {
       res.json({
         status: -1,
         message: 'username or password incorrect',
@@ -220,7 +237,7 @@ api.post('/local', async (req, res, next) => {
     });
   } else if (info.identity === 'teacher') {
     accountItem = await teacher.findOne({ teacher_id: info.username });
-    if (!userItem) {
+    if (!accountItem) {
       res.json({
         status: -1,
         message: 'username or password incorrect',
@@ -250,8 +267,8 @@ api.post('/local', async (req, res, next) => {
   }
 
   if (info.identity !== 'admin') {
-    const { key, salt } = await hashPasswd(info.password, userItem.salt);
-    if (key.compare(userItem.password) !== 0) {
+    const { key, salt } = await hashPasswd(info.password, Buffer.from(userItem.salt, 'hex'));
+    if (key.toString('hex') !== userItem.password) {
       res.json({
         status: -1,
         message: 'username or password incorrect',
