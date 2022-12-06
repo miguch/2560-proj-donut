@@ -1,4 +1,4 @@
-import { Button, Table } from '@arco-design/web-react';
+import { Button, Popconfirm, Table } from '@arco-design/web-react';
 import Title from '@arco-design/web-react/es/Typography/title';
 import { IconUserAdd } from '@arco-design/web-react/icon';
 import { useEffect, useMemo, useState } from 'react';
@@ -37,18 +37,23 @@ export default function Accounts() {
         key: 'action',
         title: 'Action',
         render: (_: Number, item: Account) => (
-          <>
-            <Button
-              onClick={() => {
-                setEditItem(item);
-                setFormVisible(true);
-              }}
-              status="danger"
-              type='primary'
-            >
+          <Popconfirm
+            title="Are you sure you want to reset this account? The user will have to sign up again"
+            onConfirm={async () => {
+              await fetcher('/api/account', {
+                method: 'DELETE',
+                body: JSON.stringify({
+                  _id: item._id,
+                  type: item.type,
+                }),
+              });
+              load();
+            }}
+          >
+            <Button status="danger" type="primary">
               Reset
             </Button>
-          </>
+          </Popconfirm>
         ),
       },
     ],
@@ -72,17 +77,13 @@ export default function Accounts() {
     load();
   }, []);
 
-  const [editItem, setEditItem] = useState<Account | null>(null);
-  const [formVisible, setFormVisible] = useState<boolean>(false);
-
   return (
     <PageContainer>
       <PageTitle>
         <Title heading={3} style={{ margin: 0 }}>
           Accounts
         </Title>
-        <PageActions>
-        </PageActions>
+        <PageActions></PageActions>
       </PageTitle>
 
       <PageTableContainer>
@@ -93,7 +94,6 @@ export default function Accounts() {
           loading={isLoading}
         ></Table>
       </PageTableContainer>
-
     </PageContainer>
   );
 }

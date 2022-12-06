@@ -47,6 +47,7 @@ const teacher = require("./schema/teacher.js");
 const selection = require("./schema/selection.js");
 const teacherUser = require("./schema/teacherUser.js");
 const studentUser = require("./schema/studentUser.js");
+const res = require("express/lib/response");
 
 // const abc = new mongoose.Schema({test: String})
 // const abcModel = mongoose.model("abc", abc);
@@ -106,7 +107,7 @@ app.get("/", async function (request, response) {
 
 //retrive courses which have been chosen by student
 app.post("/havechosen", async function (request, response) {
-  let student_id = request.body.student_id;
+  const { student_id } = request.user
   const course_list = await course.find({});
   console.log(course_list);
   const stu = await student.findOne({ student_id: student_id });
@@ -129,7 +130,7 @@ app.post("/havechosen", async function (request, response) {
 
 ////retrive courses which have not been chosen by student
 app.post("/couldchose", async function (request, response) {
-  let student_id = request.body.student_id;
+  const { student_id } = request.user
   const course_list = await course.find({});
   console.log(course_list);
   const stu = await student.findOne({ student_id: student_id });
@@ -191,7 +192,8 @@ app.post("/kecheng", async function (request, response) {
 
 
 app.post("/changevalue", async function (request, response) {
-  let { course_id, student_id, grade } = request.body;
+  const { student_id } = request.user
+  let { course_id, grade } = request.body;
   const stuRes = await student.findOne({ student_id: student_id });
   if (!stuRes) {
     response.send("cannot find student");
@@ -213,7 +215,8 @@ app.post("/changevalue", async function (request, response) {
 
 //delete course of student
 app.post("/deleteclass", async function (request, response) {
-  let { student_id, course_id } = request.body;
+  const { student_id } = request.user
+  let { course_id } = request.body;
   const stu = await student.findOne({ student_id: student_id });
   const cou = await course.findOne({ course_id: course_id });
   let result = await selection.deleteMany({
@@ -230,7 +233,8 @@ app.post("/deleteclass", async function (request, response) {
 
 //create selection
 app.post("/xuanke", async function (request, response) {
-  const { student_id, course_id } = request.body;
+  const { student_id } = request.user
+  const { course_id } = request.body;
   let stuRes;
   let courRes;
   stuRes = await student.findOne({ student_id: student_id });
@@ -260,12 +264,9 @@ app.post("/course", async function (request, response) {
 });
 
 
-//find users
 app.get("/account", async function (request, response) {
   const account_student_list = await studentUser.find({}).populate("username");
   const account_teacher_list = await teacherUser.find({}).populate("username");
-  console.log(account_student_list);
-  console.log(account_teacher_list);
   const account_list = [
     ...account_student_list.map(e => ({
       department: e.username.department,
@@ -291,6 +292,34 @@ app.get("/account", async function (request, response) {
   response.send(account_list);
 });
 
+app.delete("/account", async function (request, response) {
+  const {_id, type} = request.body;
+
+  let accountItem;
+  if (type === 'student') {
+    accountItem = studentUser.findOne({
+      _id: _id
+    })
+  } else if (type === 'teacher') {
+    accountItem = teacherUser.findOne({
+      _id: _id
+    })
+  }
+  if (!accountItem) {
+    response.status(404);
+    response.json({
+      message: 'not found'
+    })
+    return
+  }
+
+  await accountItem.remove();
+
+  response.json({
+    status: 200
+  })
+});
+
 app.get("/student", async function (request, response) {
   const student_list = await student.find({});
   console.log(student_list);
@@ -303,7 +332,7 @@ app.get("/student", async function (request, response) {
 
 //get the teacher's all course
 app.post("/mylesson", async function (request, response) {
-  const teacher_id = request.body.student_id;
+  const { teacher_id } = request.user
   const course_List = await course.find({}).populate("teacher_id");
   // console.log('[debug]', course_List)
   const res = course_List.filter((item) => {
@@ -440,7 +469,8 @@ app.put("/teacher", async function (request, response) {
 
 //Add course information
 app.post("/courseadded", async function (request, response) {
-  const { course_id, course_name, credit, department, teacher_id } =
+  const { teacher_id } = request.user
+  const { course_id, course_name, credit, department } =
     request.body;
   const resTeacher = await teacher.findOne({ teacher_id });
   console.log("debug", resTeacher);

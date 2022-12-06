@@ -127,6 +127,8 @@ api.get('/user', (req, res, next) => {
     });
     return;
   }
+
+  console.log(req.user);
   res.json({
     status: 200,
     data: req.user,
@@ -151,13 +153,16 @@ api.post('/signup', async (req, res, next) => {
     if (!accountItem) {
       res.json({
         status: -1,
-        message: 'cannot find student info associated with ID ' + newUser.username,
+        message:
+          'cannot find student info associated with ID ' + newUser.username,
       });
       return;
     }
-    if (await studentUser.findOne({
-      username: accountItem._id
-    })) {
+    if (
+      await studentUser.findOne({
+        username: accountItem._id,
+      })
+    ) {
       res.json({
         status: -1,
         message: 'Student ID already in use',
@@ -169,13 +174,16 @@ api.post('/signup', async (req, res, next) => {
     if (!accountItem) {
       res.json({
         status: -1,
-        message: 'cannot find teacher info associated with ID ' + newUser.username,
+        message:
+          'cannot find teacher info associated with ID ' + newUser.username,
       });
       return;
     }
-    if (await teacherUser.findOne({
-      username: accountItem._id
-    })) {
+    if (
+      await teacherUser.findOne({
+        username: accountItem._id,
+      })
+    ) {
       res.json({
         status: -1,
         message: 'Teacher ID already in use',
@@ -197,7 +205,7 @@ api.post('/signup', async (req, res, next) => {
   ).create(newAccount);
 
   req.login(
-    { ...accountItem, username: newUser.username, type: newUser.identity },
+    { ...accountItem._doc, username: newUser.username, type: newUser.identity },
     function (err) {
       if (err) {
         return next(err);
@@ -267,7 +275,10 @@ api.post('/local', async (req, res, next) => {
   }
 
   if (info.identity !== 'admin') {
-    const { key, salt } = await hashPasswd(info.password, Buffer.from(userItem.salt, 'hex'));
+    const { key, salt } = await hashPasswd(
+      info.password,
+      Buffer.from(userItem.salt, 'hex')
+    );
     if (key.toString('hex') !== userItem.password) {
       res.json({
         status: -1,
@@ -279,7 +290,7 @@ api.post('/local', async (req, res, next) => {
 
   req.login(
     {
-      ...accountItem,
+      ...accountItem._doc,
       username: info.username,
       type: info.identity,
     },

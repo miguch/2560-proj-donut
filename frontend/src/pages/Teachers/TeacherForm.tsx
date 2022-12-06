@@ -15,7 +15,7 @@ interface TeacherFormProps {
   visible: boolean;
   onClose: () => void;
 }
-export default function StudentForm({
+export default function TeacherForm({
   editItem,
   visible,
   onClose,
@@ -61,7 +61,7 @@ export default function StudentForm({
 
   return (
     <Modal
-      title="Student"
+      title="Teacher"
       visible={visible}
       onCancel={onClose}
       onOk={onSubmit}
