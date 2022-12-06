@@ -70,22 +70,23 @@ export default function Header() {
               onCancel={() => setDrawerVisible(false)}
             >
               <Menu style={{ backgroundColor: 'unset' }}>
-                {navigations[user.type].map(({ title, path }) => (
-                  <RouterLink
-                    onClick={() => setDrawerVisible(false)}
-                    to={path}
-                    key={path}
-                  >
-                    <Menu.Item key={path}>{title}</Menu.Item>
-                  </RouterLink>
-                ))}
+                {user?.type &&
+                  navigations[user.type].map(({ title, path }) => (
+                    <RouterLink
+                      onClick={() => setDrawerVisible(false)}
+                      to={path}
+                      key={path}
+                    >
+                      <Menu.Item key={path}>{title}</Menu.Item>
+                    </RouterLink>
+                  ))}
               </Menu>
             </Drawer>
           )}
         </HeaderNavButton>
         <HeaderTitle>PittCourse?</HeaderTitle>
         <HeaderNavBar>
-          {user &&
+          {user?.type &&
             navigations[user.type].map(({ title, path }) => (
               <RouterLink key={path} to={path}>
                 <Link>{title}</Link>

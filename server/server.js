@@ -106,7 +106,7 @@ app.post("/couldchose", async function (request, response) {
   response.send(result);
 });
 
-app.post("/chengji", async function (request, response) {
+app.post("/grade", async function (request, response) {
   let student_id = request.body.student_id;
   const studentRes = await student.findOne({ student_id: student_id });
   if (!studentRes) {

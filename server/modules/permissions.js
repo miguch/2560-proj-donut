@@ -7,6 +7,7 @@ const STATIC_PERMISSIONS = {
   '/auth/user': [],
   '/student': [ADMIN],
   '/teacher': [ADMIN],
+  '/github/link': [TEACHER, STUDENT],
   '/course': [ADMIN, TEACHER],
 };
 

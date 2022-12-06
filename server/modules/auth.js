@@ -84,12 +84,74 @@ api.get(
   passport.authenticate('github', {
     keepSessionInfo: true,
   }),
-  function (req, res) {
-    if (req.session.returnUrl) {
-      res.redirect(req.session.returnUrl);
-      delete req.session.returnUrl;
+  async function (req, res) {
+    let userItem, accountItem;
+    if (req.session.account) {
+      // link the account to GitHub
+      const { type, username } = req.session.account;
+      if (type === 'student') {
+        userItem = await studentUser.findOne({
+          _id: req.session.account.account_id,
+        });
+        accountItem = await student.findOne({
+          _id: req.session.account._id,
+        });
+      } else if (type === 'teacher') {
+        userItem = await teacherUser.findOne({
+          _id: req.session.account.account_id,
+        });
+        accountItem = await teacher.findOne({
+          _id: req.session.account._id,
+        });
+      }
+      await userItem.update({
+        github_id: req.user.id,
+      });
+      delete req.session.account;
+      return;
     } else {
-      res.redirect('/');
+      userItem = await studentUser.findOne({
+        github_id: req.user.id,
+      });
+      if (userItem) {
+        accountItem = await student.findOne({
+          _id: userItem.username,
+        });
+      } else {
+        userItem = await teacherUser.findOne({
+          github_id: req.user.id,
+        });
+        accountItem = await teacher.findOne({
+          _id: userItem.username,
+        });
+      }
+    }
+    if (userItem && accountItem) {
+      req.login(
+        {
+          ...accountItem._doc,
+          username: accountItem.student_id || accountItem.teacher_id,
+          type: accountItem.student_id ? 'student' : 'teacher',
+          github_id: userItem.github_id,
+          account_id: userItem._id,
+        },
+        function (err) {
+          if (req.session.returnUrl) {
+            res.redirect(req.session.returnUrl);
+            delete req.session.returnUrl;
+          } else {
+            res.redirect('/');
+          }
+        }
+      );
+    } else {
+      // normal login
+      if (req.session.returnUrl) {
+        res.redirect(req.session.returnUrl);
+        delete req.session.returnUrl;
+      } else {
+        res.redirect('/');
+      }
     }
   }
 );
@@ -100,6 +162,18 @@ api.get('/github', (req, res, next) => {
   }
   passport.authenticate('github', {
     successReturnToOrRedirect: req.query.r,
+    keepSessionInfo: true,
+  })(req, res, next);
+});
+
+api.get('/github/link', (req, res, next) => {
+  if (req.query.r) {
+    req.session.returnUrl = req.query.r;
+  }
+  req.session.account = {
+    ...req.user,
+  };
+  passport.authenticate('github', {
     keepSessionInfo: true,
   })(req, res, next);
 });
@@ -205,7 +279,13 @@ api.post('/signup', async (req, res, next) => {
   ).create(newAccount);
 
   req.login(
-    { ...accountItem._doc, username: newUser.username, type: newUser.identity },
+    {
+      ...accountItem._doc,
+      username: newUser.username,
+      type: newUser.identity,
+      github_id: userItem.github_id,
+      account_id: userItem._id,
+    },
     function (err) {
       if (err) {
         return next(err);
@@ -293,6 +373,8 @@ api.post('/local', async (req, res, next) => {
       ...accountItem._doc,
       username: info.username,
       type: info.identity,
+      github_id: userItem.github_id,
+      account_id: userItem._id,
     },
     function (err) {
       if (err) {

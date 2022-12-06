@@ -7,4 +7,5 @@ export interface User {
   student_name?: String;
   teacher_name?: String;
   department?: String;
+  github_id?: String;
 }
