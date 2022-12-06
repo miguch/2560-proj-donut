@@ -5,5 +5,5 @@ interface Student {
   age: Number;
   department: String;
   fee: Number;
-  _id: Number | undefined;
+  _id: Number | String | undefined;
 }

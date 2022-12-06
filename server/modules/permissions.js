@@ -3,11 +3,11 @@ const TEACHER = 'teacher';
 const STUDENT = 'student';
 
 const STATIC_PERMISSIONS = {
-  '/login': [],
   '/account': [ADMIN],
-  '/students': [ADMIN],
   '/auth/user': [],
-  '/student': [ADMIN]
+  '/student': [ADMIN],
+  '/teacher': [ADMIN],
+  '/course': [ADMIN, TEACHER],
 };
 
 module.exports = STATIC_PERMISSIONS;

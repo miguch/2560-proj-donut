@@ -60,51 +60,6 @@ app.get("/", async function (request, response) {
   });
 });
 
-//login in for users
-// app.post("/login", async function (request, response) {
-//   const { username, password, identity } = request.body;
-
-//   let identityRes;
-//   if (identity === "student") {
-//     identityRes = await student.findOne({ student_id: username });
-//     if (!identityRes) {
-//       response
-//         .status(200)
-//         .send(`This ${identityRes.student_name} does not exist`);
-//       return;
-//     }
-//     console.log(identityRes);
-//     const res = await studentUser.findOne({
-//       username: identityRes._id,
-//       password,
-//       identity,
-//     });
-//     if (!res) {
-//       response
-//         .status(200)
-//         .send(`This ${identityRes.student_name} does not exist`);
-//       return;
-//     }
-//     // console.log(res);
-//     response.send(identityRes);
-//   } else {
-//     identityRes = await teacher.findOne({ teacher_id: username });
-//     console.log(identityRes);
-//     const res = await teacherUser.findOne({
-//       username: identityRes._id,
-//       password,
-//       identity,
-//     });
-//     if (!res) {
-//       response
-//         .status(200)
-//         .send(`This ${identityRes.teacher_name} does not exist`);
-//       return;
-//     }
-//     response.send(identityRes);
-//   }
-// });
-
 //retrive courses which have been chosen by student
 app.post("/havechosen", async function (request, response) {
   const { student_id } = request.user
@@ -169,7 +124,7 @@ app.post("/chengji", async function (request, response) {
 
 
 //get student from course
-app.post("/kecheng", async function (request, response) {
+app.post("/course_students", async function (request, response) {
   let { course_id } = request.body;
   console.log(course_id);
   const courseRes = await course.findOne({ course_id: course_id });
@@ -191,7 +146,7 @@ app.post("/kecheng", async function (request, response) {
 });
 
 
-app.post("/changevalue", async function (request, response) {
+app.post("/update_grade", async function (request, response) {
   const { student_id } = request.user
   let { course_id, grade } = request.body;
   const stuRes = await student.findOne({ student_id: student_id });
@@ -214,7 +169,7 @@ app.post("/changevalue", async function (request, response) {
 
 
 //delete course of student
-app.post("/deleteclass", async function (request, response) {
+app.post("/drop_course", async function (request, response) {
   const { student_id } = request.user
   let { course_id } = request.body;
   const stu = await student.findOne({ student_id: student_id });
@@ -232,7 +187,7 @@ app.post("/deleteclass", async function (request, response) {
 });
 
 //create selection
-app.post("/xuanke", async function (request, response) {
+app.post("/register_course", async function (request, response) {
   const { student_id } = request.user
   const { course_id } = request.body;
   let stuRes;
@@ -250,17 +205,6 @@ app.post("/xuanke", async function (request, response) {
     return;
   }
   response.send(res);
-});
-
-//find all courses in database
-app.post("/course", async function (request, response) {
-  const course_list = await course.find({}).populate("teacher_id");
-  console.log(course_list);
-  if (!course_list) {
-    response.send("Cannot find course");
-    return;
-  }
-  response.send(course_list);
 });
 
 
@@ -328,23 +272,6 @@ app.get("/student", async function (request, response) {
     return;
   }
   response.send(student_list);
-});
-
-//get the teacher's all course
-app.post("/mylesson", async function (request, response) {
-  const { teacher_id } = request.user
-  const course_List = await course.find({}).populate("teacher_id");
-  // console.log('[debug]', course_List)
-  const res = course_List.filter((item) => {
-    console.log("debug", item.teacher_id);
-    return item.teacher_id && item.teacher_id.teacher_id === teacher_id;
-  });
-  console.log("[debug]", res);
-  if (!res) {
-    response.send("Get myLesson, failed!");
-    return;
-  }
-  response.send(res);
 });
 
 //add new student
@@ -467,20 +394,41 @@ app.put("/teacher", async function (request, response) {
   response.send(res);
 });
 
+//find all courses in database
+app.get("/course", async function (request, response) {
+  let course_list;
+  if (request.user.type === 'admin') {
+    course_list = await course.find({}).populate("teacher_id");
+  } else if (request.user.type === 'teacher') {
+    const teacher_id = request.user._id;
+    course_list = await course.find({
+      teacher_id: teacher_id
+    }).populate("teacher_id");
+  }
+  console.log(course_list);
+  if (!course_list) {
+    response.send("Cannot find course");
+    return;
+  }
+  response.send(course_list);
+});
+
 //Add course information
-app.post("/courseadded", async function (request, response) {
-  const { teacher_id } = request.user
+app.post("/course", async function (request, response) {
   const { course_id, course_name, credit, department } =
     request.body;
-  const resTeacher = await teacher.findOne({ teacher_id });
-  console.log("debug", resTeacher);
+
   const newCourse = {
     course_id,
     course_name,
     credit,
     department,
-    teacher_id: resTeacher._id,
   };
+  if (request.user.type === 'admin') {
+    newCourse.teacher_id = request.body.teacher_id
+  } else if (request.user.type === 'teacher') {
+    newCourse.teacher_id = request.user._id
+  }
   console.log(newCourse);
   const res = await course.create(newCourse);
 
@@ -490,6 +438,79 @@ app.post("/courseadded", async function (request, response) {
   }
   console.log("save successfully：" + res);
   response.send(res);
+});
+
+app.put("/course", async function (request, response) {
+  const { _id, course_id, course_name, credit, department } =
+    request.body;
+
+  const courseItem = await course.findOne({_id: _id});
+
+  if (!courseItem) {
+    res.status(404);
+    res.json({
+      message: "Not found"
+    })
+    return;
+  }
+
+  const newCourse = {
+    course_id,
+    course_name,
+    credit,
+    department,
+  };
+  if (request.user.type === 'admin' && request.body.teacher_id) {
+    newCourse.teacher_id = request.body.teacher_id
+  } else if (request.user.type === 'teacher') {
+    if (courseItem.teacher_id !== request.user._id) {
+      res.status(400);
+      res.json({
+        message: "cannot modify other teacher's course"
+      })
+      return
+    }
+  }
+  console.log(newCourse);
+  const res = await courseItem.update(newCourse);
+
+  if (!res) {
+    res.send("insert error");
+    return;
+  }
+  console.log("save successfully：" + res);
+  response.send(res);
+});
+
+app.delete("/course", async function (request, response) {
+  const { _id } =
+    request.body;
+
+  const courseItem = await course.findOne({_id: _id});
+
+  if (!courseItem) {
+    res.status(404);
+    res.json({
+      message: "Not found"
+    })
+    return;
+  }
+
+  if (request.user.type === 'teacher') {
+    if (courseItem.teacher_id !== request.user._id) {
+      res.status(400);
+      res.json({
+        message: "cannot modify other teacher's course"
+      })
+      return
+    }
+  }
+  
+  await courseItem.remove();
+
+  response.json({
+    status: 200
+  });
 });
 
 app.all('*', (req, res) => {

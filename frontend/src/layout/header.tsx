@@ -41,8 +41,17 @@ export default function Header() {
         title: 'Accounts',
         path: '/accounts',
       },
+      {
+        title: 'Courses',
+        path: '/courses',
+      },
     ],
-    teacher: [{ title: '', path: '' }],
+    teacher: [
+      {
+        title: 'Courses',
+        path: '/courses',
+      },
+    ],
     student: [{ title: '', path: '' }],
   } as const;
 

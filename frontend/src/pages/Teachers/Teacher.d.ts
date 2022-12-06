@@ -3,5 +3,5 @@ interface Teacher {
   teacher_name: String;
   department: String;
   position: String;
-  _id: Number | undefined;
+  _id: Number | String | undefined;
 }
