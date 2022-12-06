@@ -59,61 +59,50 @@ app.get("/", async function (request, response) {
   });
 });
 
-//get all information of studnets
-app.get("/students", async function (request, response) {
-  const student_list = await student.find({});
-  console.log(student_list);
-  if (!student_list) {
-    response.send("cannot find students");
-    return;
-  }
-  response.send(student_list);
-});
-
 //login in for users
-app.post("/login", async function (request, response) {
-  const { username, password, identity } = request.body;
+// app.post("/login", async function (request, response) {
+//   const { username, password, identity } = request.body;
 
-  let identityRes;
-  if (identity === "student") {
-    identityRes = await student.findOne({ student_id: username });
-    if (!identityRes) {
-      response
-        .status(200)
-        .send(`This ${identityRes.student_name} does not exist`);
-      return;
-    }
-    console.log(identityRes);
-    const res = await studentUser.findOne({
-      username: identityRes._id,
-      password,
-      identity,
-    });
-    if (!res) {
-      response
-        .status(200)
-        .send(`This ${identityRes.student_name} does not exist`);
-      return;
-    }
-    // console.log(res);
-    response.send(identityRes);
-  } else {
-    identityRes = await teacher.findOne({ teacher_id: username });
-    console.log(identityRes);
-    const res = await teacherUser.findOne({
-      username: identityRes._id,
-      password,
-      identity,
-    });
-    if (!res) {
-      response
-        .status(200)
-        .send(`This ${identityRes.teacher_name} does not exist`);
-      return;
-    }
-    response.send(identityRes);
-  }
-});
+//   let identityRes;
+//   if (identity === "student") {
+//     identityRes = await student.findOne({ student_id: username });
+//     if (!identityRes) {
+//       response
+//         .status(200)
+//         .send(`This ${identityRes.student_name} does not exist`);
+//       return;
+//     }
+//     console.log(identityRes);
+//     const res = await studentUser.findOne({
+//       username: identityRes._id,
+//       password,
+//       identity,
+//     });
+//     if (!res) {
+//       response
+//         .status(200)
+//         .send(`This ${identityRes.student_name} does not exist`);
+//       return;
+//     }
+//     // console.log(res);
+//     response.send(identityRes);
+//   } else {
+//     identityRes = await teacher.findOne({ teacher_id: username });
+//     console.log(identityRes);
+//     const res = await teacherUser.findOne({
+//       username: identityRes._id,
+//       password,
+//       identity,
+//     });
+//     if (!res) {
+//       response
+//         .status(200)
+//         .send(`This ${identityRes.teacher_name} does not exist`);
+//       return;
+//     }
+//     response.send(identityRes);
+//   }
+// });
 
 //retrive courses which have been chosen by student
 app.post("/havechosen", async function (request, response) {
@@ -272,55 +261,34 @@ app.post("/course", async function (request, response) {
 
 
 //find users
-app.post("/account", async function (request, response) {
+app.get("/account", async function (request, response) {
   const account_student_list = await studentUser.find({}).populate("username");
   const account_teacher_list = await teacherUser.find({}).populate("username");
   console.log(account_student_list);
   console.log(account_teacher_list);
-  const account_list = [...account_student_list, ...account_teacher_list];
+  const account_list = [
+    ...account_student_list.map(e => ({
+      department: e.username.department,
+      ref_id: e.username.student_id,
+      name: e.username.student_name,
+      type: 'student',
+      is_github_linked: !!e.github_id,
+      _id: e._id
+    })), 
+    ...account_teacher_list.map(e => ({
+      department: e.username.department,
+      ref_id: e.username.teacher_id,
+      name: e.username.teacher_name,
+      type: 'teacher',
+      is_github_linked: !!e.github_id,
+      _id: e._id
+    }))
+  ];
   if (!account_list) {
     response.send("Cannot find users");
     return;
   }
   response.send(account_list);
-});
-
-//add new account
-app.post("/accountadded", async function (request, response) {
-  const { username, password, identity } = request.body;
-  let resAccount;
-  if (identity === "student") {
-    resAccount = await student.findOne({ student_id: username });
-    const newAccount = {
-      username: resAccount._id,
-      password,
-      identity,
-    };
-    console.log(newAccount);
-    const res = await studentUser.create(newAccount);
-    if (!res) {
-      res.send("insert error");
-      return;
-    }
-
-    console.log("save successfully：" + res);
-    response.send(res);
-  } else {
-    resAccount = await teacher.findOne({ teacher_id: username });
-    const newAccount = {
-      username: resAccount._id,
-      password,
-      identity,
-    };
-    const res = await teacherUser.create(newAccount);
-    if (!res) {
-      res.send("insert error");
-      return;
-    }
-
-    console.log("save successfully：" + res);
-    response.send(res);
-  }
 });
 
 app.get("/student", async function (request, response) {
@@ -351,7 +319,7 @@ app.post("/mylesson", async function (request, response) {
 });
 
 //add new student
-app.put("/student", async function (request, response) {
+app.post("/student", async function (request, response) {
   const { student_id, student_name, gender, age, department, fee } =
     request.body;
   const newStu = {
@@ -375,7 +343,7 @@ app.put("/student", async function (request, response) {
 });
 
 // update student
-app.post("/student", async function (request, response) {
+app.put("/student", async function (request, response) {
   const { _id, student_id, student_name, gender, age, department, fee } =
     request.body;
   const item = await student.findOne({
@@ -421,7 +389,7 @@ app.get("/teacher", async function (request, response) {
 });
 
 //add teacher information
-app.put("/teacher", async function (request, response) {
+app.post("/teacher", async function (request, response) {
   const { teacher_id, teacher_name, department, position } = request.body;
   const newTeacher = {
     teacher_id,
@@ -441,7 +409,7 @@ app.put("/teacher", async function (request, response) {
 });
 
 // update teacher information
-app.post("/teacher", async function (request, response) {
+app.put("/teacher", async function (request, response) {
   const { _id, teacher_id, teacher_name, department, position } = request.body;
   const item = await teacher.findOne({
     _id: _id

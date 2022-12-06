@@ -1,4 +1,4 @@
-interface Student {
+interface Teacher {
   teacher_id: String;
   teacher_name: String;
   department: String;

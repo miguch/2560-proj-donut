@@ -52,7 +52,7 @@ function registerPassport(app) {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(async (req, res, next) => {
-    // authentication middleware
+    // authentication & permission middleware
     console.log(req.path, req.query);
     if (req.path in permissions && permissions[req.path].length > 0) {
       if (!(req.isAuthenticated() && req.user)) {
@@ -277,7 +277,6 @@ api.post('/local', async (req, res, next) => {
     }
   }
 
-  // TODO: add student/teacher info
   req.login(
     {
       ...accountItem,

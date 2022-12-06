@@ -4,7 +4,7 @@ const STUDENT = 'student';
 
 const STATIC_PERMISSIONS = {
   '/login': [],
-  '/accountadded': [],
+  '/account': [ADMIN],
   '/students': [ADMIN],
   '/auth/user': [],
   '/student': [ADMIN]

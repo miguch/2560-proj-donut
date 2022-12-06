@@ -5,6 +5,7 @@ import {
   Link,
 } from 'react-router-dom';
 import Layout from './layout/layout';
+import Accounts from './pages/Accounts/Accounts';
 import LoginPage from './pages/login/login';
 import NotFoundPage from './pages/NotFoundPage';
 import Onboarding from './pages/onboarding/onboarding';
@@ -39,6 +40,14 @@ export const baseRouter = createBrowserRouter([
         element: (
           <PageGuard allowedRoles={[ADMIN]}>
             <Teachers></Teachers>
+          </PageGuard>
+        ),
+      },
+      {
+        path: '/accounts',
+        element: (
+          <PageGuard allowedRoles={[ADMIN]}>
+            <Accounts></Accounts>
           </PageGuard>
         ),
       },

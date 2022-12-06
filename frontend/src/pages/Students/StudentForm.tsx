@@ -41,13 +41,13 @@ export default function StudentForm({
       if (editItem) {
         // update
         const data = await fetcher('/api/student', {
-          method: 'POST',
+          method: 'PUT',
           body: JSON.stringify({ _id: editItem._id, ...formValues }),
         });
       } else {
         // create
         const data = await fetcher('/api/student', {
-          method: 'PUT',
+          method: 'POST',
           body: JSON.stringify(formValues),
         });
       }

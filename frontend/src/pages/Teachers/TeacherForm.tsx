@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import useFetch from '../../hooks/useFetch';
 
 interface TeacherFormProps {
-  editItem: Student | null;
+  editItem: Teacher | null;
   visible: boolean;
   onClose: () => void;
 }
@@ -41,13 +41,13 @@ export default function StudentForm({
       if (editItem) {
         // update
         const data = await fetcher('/api/teacher', {
-          method: 'POST',
+          method: 'PUT',
           body: JSON.stringify({ _id: editItem._id, ...formValues }),
         });
       } else {
         // create
         const data = await fetcher('/api/teacher', {
-          method: 'PUT',
+          method: 'POST',
           body: JSON.stringify(formValues),
         });
       }
