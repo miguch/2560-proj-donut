@@ -1,15 +1,21 @@
 import {
+  Button,
   Drawer,
   Form,
   Input,
   InputNumber,
+  Message,
   Modal,
   Select,
+  Table,
+  TimePicker,
 } from '@arco-design/web-react';
 import useForm from '@arco-design/web-react/es/Form/useForm';
 import { useEffect, useState } from 'react';
 import useFetch from '../../hooks/useFetch';
 import useUser from '../../hooks/useUser';
+import { ModalTableContainer } from '../pages.style';
+import { timeToVal, valToTime, weekdays } from './utils';
 
 interface CourseFormProps {
   editItem: Course | null;
@@ -32,18 +38,24 @@ export default function CourseForm({
         'teacher_ref_id',
         (editItem.teacher_id as Teacher)._id
       );
+      setSections(editItem.sections || []);
     } else {
       form.resetFields();
       if (user?.type === 'teacher') {
         form.setFieldValue('teacher_ref_id', user._id);
-        form.setFieldValue("department", user.department);
+        form.setFieldValue('department', user.department);
       }
+      setSections([]);
     }
   }, [editItem]);
 
   const fetcher = useFetch();
   const [isLoading, setIsLoading] = useState(false);
   async function onSubmit() {
+    if (sections.length === 0) {
+      Message.warning('At least one section is needed');
+      return;
+    }
     try {
       setIsLoading(true);
       const formValues = await form.validate();
@@ -55,6 +67,7 @@ export default function CourseForm({
             _id: editItem._id,
             ...formValues,
             teacher_id: formValues.teacher_ref_id,
+            sections,
           }),
         });
       } else {
@@ -64,6 +77,7 @@ export default function CourseForm({
           body: JSON.stringify({
             ...formValues,
             teacher_id: formValues.teacher_ref_id,
+            sections,
           }),
         });
       }
@@ -87,6 +101,8 @@ export default function CourseForm({
       fetchOptions();
     }
   }, [user]);
+
+  const [sections, setSections] = useState<Section[]>([]);
 
   return (
     <Modal
@@ -147,6 +163,110 @@ export default function CourseForm({
           disabled={true}
         >
           <Input></Input>
+        </Form.Item>
+        <Form.Item
+          rules={[{ required: true }]}
+          label="Sections"
+          initialValue={[]}
+        >
+          <ModalTableContainer>
+            <Table
+              data={sections}
+              pagination={false}
+              rowKey={(row) =>
+                `${row.weekday} ${row.startTime} ${Math.random()}`
+              }
+              columns={[
+                {
+                  key: 'weekday',
+                  title: 'Weekday',
+                  dataIndex: 'weekday',
+                  render(col, item, index) {
+                    return (
+                      <Select
+                        onChange={(newVal) => {
+                          sections[index].weekday = newVal;
+                          setSections([...sections]);
+                        }}
+                        value={col}
+                      >
+                        {weekdays.map((dayName, idx) => (
+                          <Select.Option key={idx} value={idx}>
+                            {dayName}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    );
+                  },
+                },
+                {
+                  key: 'startTime',
+                  title: 'Start Time',
+                  dataIndex: 'startTime',
+                  render(col, item, index) {
+                    return (
+                      <TimePicker
+                        allowClear={false}
+                        format="HH:mm"
+                        value={valToTime(col)}
+                        onChange={(str) => {
+                          const val = timeToVal(str);
+                          if (val > sections[index].endTime) {
+                            Message.warning(
+                              'Section cannot start after end time'
+                            );
+                            return;
+                          }
+                          sections[index].startTime = val;
+                          setSections([...sections]);
+                        }}
+                      ></TimePicker>
+                    );
+                  },
+                },
+                {
+                  key: 'endTime',
+                  title: 'End Time',
+                  dataIndex: 'endTime',
+                  render(col, item, index) {
+                    return (
+                      <TimePicker
+                        allowClear={false}
+                        format="HH:mm"
+                        value={valToTime(col)}
+                        onChange={(str) => {
+                          const val = timeToVal(str);
+                          if (val < sections[index].startTime) {
+                            Message.warning(
+                              'Section cannot end before start time'
+                            );
+                            return;
+                          }
+                          sections[index].endTime = val;
+                          setSections([...sections]);
+                        }}
+                      ></TimePicker>
+                    );
+                  },
+                },
+              ]}
+            />
+          </ModalTableContainer>
+          <Button
+            style={{ marginTop: '3px' }}
+            onClick={() => {
+              setSections([
+                ...sections,
+                {
+                  weekday: 0,
+                  startTime: 540,
+                  endTime: 720,
+                },
+              ]);
+            }}
+          >
+            Add
+          </Button>
         </Form.Item>
       </Form>
     </Modal>

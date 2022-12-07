@@ -415,7 +415,7 @@ app.get("/course", async function (request, response) {
 
 //Add course information
 app.post("/course", async function (request, response) {
-  const { course_id, course_name, credit, department } =
+  const { course_id, course_name, credit, department, sections } =
     request.body;
 
   const newCourse = {
@@ -423,6 +423,7 @@ app.post("/course", async function (request, response) {
     course_name,
     credit,
     department,
+    sections
   };
   if (request.user.type === 'admin') {
     newCourse.teacher_id = request.body.teacher_id
@@ -441,7 +442,7 @@ app.post("/course", async function (request, response) {
 });
 
 app.put("/course", async function (request, response) {
-  const { _id, course_id, course_name, credit, department } =
+  const { _id, course_id, course_name, credit, department, sections } =
     request.body;
 
   const courseItem = await course.findOne({_id: _id});
@@ -459,6 +460,7 @@ app.put("/course", async function (request, response) {
     course_name,
     credit,
     department,
+    sections,
   };
   if (request.user.type === 'admin' && request.body.teacher_id) {
     newCourse.teacher_id = request.body.teacher_id
