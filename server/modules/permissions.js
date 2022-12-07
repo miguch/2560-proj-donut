@@ -9,6 +9,7 @@ const STATIC_PERMISSIONS = {
   '/teacher': [ADMIN],
   '/github/link': [TEACHER, STUDENT],
   '/course': [ADMIN, TEACHER],
+  '/courses_students':[TEACHER],
 };
 
 module.exports = STATIC_PERMISSIONS;

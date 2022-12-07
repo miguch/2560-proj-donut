@@ -123,8 +123,6 @@ app.post("/grade", async function (request, response) {
   response.send(selectionRes);
 });
 
-
-
 //get student from course
 app.post("/course_students", async function (request, response) {
   let { course_id } = request.body;

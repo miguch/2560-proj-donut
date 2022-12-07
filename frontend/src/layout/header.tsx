@@ -49,7 +49,10 @@ export default function Header() {
     teacher: [
       {
         title: 'Courses',
-        path: '/courses',
+        path: '/courses'},
+      {
+        title: 'Students',
+        path:'/courses_students'
       },
     ],
     student: [{ title: '', path: '' }],
