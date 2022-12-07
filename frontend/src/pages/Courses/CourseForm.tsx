@@ -267,6 +267,17 @@ export default function CourseForm({
           >
             Add
           </Button>
+          <Button
+            style={{ marginTop: '3px', marginLeft: '6px' }}
+            status="danger"
+            onClick={() => {
+              if (sections.length > 0) {
+                setSections(sections.slice(0, sections.length - 1));
+              }
+            }}
+          >
+            Remove
+          </Button>
         </Form.Item>
       </Form>
     </Modal>

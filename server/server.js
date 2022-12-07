@@ -21,6 +21,8 @@ const fs = require("fs");
 const cors = require('cors');
 const {registerPassport, loginApi} = require('./modules/auth')
 
+const detectConflict = require("./validation/timeValidation")
+
 app.use(express.json());
 app.use(cors());
 
@@ -418,6 +420,14 @@ app.post("/course", async function (request, response) {
   const { course_id, course_name, credit, department, sections } =
     request.body;
 
+  if (!detectConflict(sections)) {
+    response.status(400);
+    response.json({
+      message: "Conflict detected in sections"
+    });
+    return;
+  }
+
   const newCourse = {
     course_id,
     course_name,
@@ -448,10 +458,18 @@ app.put("/course", async function (request, response) {
   const courseItem = await course.findOne({_id: _id});
 
   if (!courseItem) {
-    res.status(404);
-    res.json({
+    response.status(404);
+    response.json({
       message: "Not found"
     })
+    return;
+  }
+
+  if (!detectConflict(sections)) {
+    response.status(400);
+    response.json({
+      message: "Conflict detected in sections"
+    });
     return;
   }
 
@@ -466,8 +484,8 @@ app.put("/course", async function (request, response) {
     newCourse.teacher_id = request.body.teacher_id
   } else if (request.user.type === 'teacher') {
     if (courseItem.teacher_id !== request.user._id) {
-      res.status(400);
-      res.json({
+      response.status(400);
+      response.json({
         message: "cannot modify other teacher's course"
       })
       return
@@ -491,8 +509,8 @@ app.delete("/course", async function (request, response) {
   const courseItem = await course.findOne({_id: _id});
 
   if (!courseItem) {
-    res.status(404);
-    res.json({
+    response.status(404);
+    response.json({
       message: "Not found"
     })
     return;
@@ -500,8 +518,8 @@ app.delete("/course", async function (request, response) {
 
   if (request.user.type === 'teacher') {
     if (courseItem.teacher_id !== request.user._id) {
-      res.status(400);
-      res.json({
+      response.status(400);
+      response.json({
         message: "cannot modify other teacher's course"
       })
       return

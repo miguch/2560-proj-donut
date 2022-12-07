@@ -35,7 +35,9 @@ export default function useFetch(auth = true) {
       }
     }).catch(e => {
       console.error(e);
-      Message.error('request failed');
+      if (!e.status) {
+        Message.error('request failed');
+      }
       throw e
     });
   return fetcher;

@@ -1,6 +1,6 @@
 // sections: {weekday: Number, startTime: Number, endTime: Number}[]
 // return true if no conflict is detected
-modules.exports = function detectConflict(sections) {
+module.exports = function detectConflict(sections) {
   sections.sort((a, b) => {
     const order = ['weekday', 'startTime', 'endTime'];
     for (const field of order) {
