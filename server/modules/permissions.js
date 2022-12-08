@@ -11,10 +11,11 @@ const STATIC_PERMISSIONS = {
   '/github/link': [TEACHER, STUDENT],
   '/course': [ADMIN, TEACHER],
   '/couldchose': [STUDENT],
-  '/grade': [STUDENT],
+  '/grade': [TEACHER],
   '/drop_course': [STUDENT],
   '/register_course': [STUDENT],
   '/havechosen': [STUDENT],
   '/courses_students':[TEACHER],
+  "/withdraw": [TEACHER]
 };
 module.exports = STATIC_PERMISSIONS;

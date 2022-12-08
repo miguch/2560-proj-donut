@@ -103,21 +103,6 @@ app.get("/couldchose", async function (request, response) {
   response.send(result);
 });
 
-app.post("/grade", async function (request, response) {
-  let student_id = request.body.student_id;
-  const studentRes = await student.findOne({ student_id: student_id });
-  if (!studentRes) {
-    studentRes.send("error");
-  }
-  const selectionRes = await selection
-    .find({ student_id: studentRes._id })
-    .populate("course_id");
-  if (!selectionRes) {
-    selectionRes.send("error");
-  }
-  response.send(selectionRes);
-});
-
 //get student from course
 app.post("/course_students", async function (request, response) {
   let { course_id } = request.body;
@@ -141,25 +126,39 @@ app.post("/course_students", async function (request, response) {
 });
 
 
-app.post("/update_grade", async function (request, response) {
+app.post("/grade", async function (request, response) {
   const { student_id } = request.user
-  let { course_id, grade } = request.body;
-  const stuRes = await student.findOne({ student_id: student_id });
-  if (!stuRes) {
-    response.send("cannot find student");
+  let { selection_ref_id, grade, completed, failed } = request.body;
+  const selectionItem = await selection.findOne({
+    _id: selection_ref_id
+  }).populate("course_id")
+  if (!selectionItem) {
+    response.status(404);
+    response.json({
+      message: "Selection record not found"
+    });
+    return;
   }
+  if (selectionItem.course_id.teacher_id !== request.user._id) {
+    response.status(400);
+    response.json({
+      message: "cannot change grade for courses taught by other teachers"
+    });
+    return;
+  }
+  if (selectionItem.status === 'withdrawn') {
+    response.status(400);
+    response.json({
+      message: `student has withdrawn from the course`
+    });
+    return;
+  }
+  await selectionItem.update({
+    grade: grade,
+    status: failed ? 'failed' : (completed ? 'completed' : 'enrolled'),
+  })
 
-  const courseRes = await course.findOne({ course_id: course_id });
-  if (!courseRes) {
-    response.send("cannot find course");
-  }
-  const res = await selection.findOneAndUpdate(
-    { student_id: stuRes._id, course_id: courseRes._id },
-    { grade: grade }
-  );
-  if (!res) {
-    response.send("cannot find result");
-  }
+  response.send("grade successfully")
 });
 
 
@@ -205,6 +204,38 @@ app.post("/drop_course", async function (request, response) {
   response.send("delete successful");
 });
 
+app.post("/withdraw", async function (request, response) {
+  let { selection_ref_id } = request.body;
+  const selectionItem = await selection.findOne({
+    _id: selection_ref_id
+  }).populate("course_id")
+  if (!selectionItem) {
+    response.status(404);
+    response.json({
+      message: "Selection record not found"
+    });
+    return;
+  }
+  if (selectionItem.course_id.teacher_id !== request.user._id) {
+    response.status(400);
+    response.json({
+      message: "cannot withdraw students from courses taught by other teachers"
+    });
+    return;
+  }
+  if (selectionItem.status !== 'enrolled') {
+    response.status(400);
+    response.json({
+      message: `student is not actively enrolled in this course`
+    });
+    return;
+  }
+  await selectionItem.update({
+    status: "withdrawn"
+  });
+  response.send("withdraw successfully");
+});
+
 //create selection
 app.post("/register_course", async function (request, response) {
   const { student_id } = request.user
@@ -231,6 +262,19 @@ app.post("/register_course", async function (request, response) {
     response.status(400);
     response.json({
       message: "course is not accepting students now"
+    });
+    return;
+  }
+  const sameIdCourses = await course.find({ course_id: courRes.course_id });
+  const selectionItem = await selection.findOne({
+    student_id: stuRes._id,
+    course_id: {$in: sameIdCourses.map(e => e._id)},
+    status: {$in: ["completed", "enrolled"]}
+  });
+  if (selectionItem) {
+    response.status(400);
+    response.json({
+      message: "Course with the same course ID has already been enrolled or completed"
     });
     return;
   }
