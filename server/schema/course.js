@@ -7,11 +7,7 @@ const courseSchema = new Schema({
   credit: { type: Number },
   department: { type: String },
   teacher_id: { type: Schema.Types.ObjectId, ref: 'teacher' },
-  prerequisites: [
-    new Schema({
-      course_id: { type: String },
-    }),
-  ],
+  prerequisites: [String],
   sections: [
     new Schema({
         weekday: {type: Number},
@@ -21,7 +17,8 @@ const courseSchema = new Schema({
         startTime: {type: Number},
         endTime: {type: Number}
     })
-  ]
+  ],
+  isPaused: { type: String },
 });
 
 module.exports = mongoose.model('course', courseSchema);

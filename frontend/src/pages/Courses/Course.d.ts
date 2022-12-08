@@ -1,11 +1,11 @@
 interface Course {
-  course_id: String;
+  course_id: string;
   course_name: String;
   credit: Number;
   department: String;
   teacher_id: String | Teacher;
   _id: Number | String | undefined;
-  prerequisites: Array<{ course_id: String }>;
+  prerequisites: Array<String>;
   sections: Array<Section>;
 }
 

@@ -22,6 +22,10 @@ const cors = require('cors');
 const {registerPassport, loginApi} = require('./modules/auth')
 
 const detectConflict = require("./validation/timeValidation")
+const {
+  prerequisiteCheck,
+  prereqLoopCheck
+} = require("./validation/prerequisiteCheck");
 
 app.use(express.json());
 app.use(cors());
@@ -67,11 +71,8 @@ app.post("/havechosen", async function (request, response) {
   const { student_id } = request.user
   const course_list = await course.find({});
   console.log(course_list);
-  const stu = await student.findOne({ student_id: student_id });
-  console.log(stu);
-  student_id = stu._id;
   const res = await selection
-    .find({ student_id: student_id })
+    .find({ student_id: request.user._id })
     .populate("course_id");
   //找不在selction里面的course
   console.log(res);
@@ -88,13 +89,10 @@ app.post("/havechosen", async function (request, response) {
 ////retrive courses which have not been chosen by student
 app.post("/couldchose", async function (request, response) {
   const { student_id } = request.user
-  const course_list = await course.find({});
+  const course_list = await course.find({}).populate("teacher_id");
   console.log(course_list);
-  const stu = await student.findOne({ student_id: student_id });
-  console.log(stu);
-  student_id = stu._id;
   const res = await selection
-    .find({ student_id: student_id })
+    .find({ student_id: request.user._id })
     .populate("course_id");
   //find the course which is not in selection
   console.log(res);
@@ -266,6 +264,17 @@ app.delete("/account", async function (request, response) {
   })
 });
 
+app.get("/student_list", async function (request, response) {
+  // student list that can be accessed by teachers and students
+  const student_list = await student.find({});
+  console.log(student_list);
+  if (!student_list) {
+    response.send("Cannot find students");
+    return;
+  }
+  response.send(student_list);
+});
+
 app.get("/student", async function (request, response) {
   const student_list = await student.find({});
   console.log(student_list);
@@ -399,7 +408,9 @@ app.put("/teacher", async function (request, response) {
 //find all courses in database
 app.get("/course", async function (request, response) {
   let course_list;
-  if (request.user.type === 'admin') {
+  if (request.user.type === 'admin' || 
+    (request.user.type === 'teacher' 
+    && request.query.showFull)) {
     course_list = await course.find({}).populate("teacher_id");
   } else if (request.user.type === 'teacher') {
     const teacher_id = request.user._id;
@@ -417,7 +428,7 @@ app.get("/course", async function (request, response) {
 
 //Add course information
 app.post("/course", async function (request, response) {
-  const { course_id, course_name, credit, department, sections } =
+  const { course_id, course_name, credit, department, sections, prerequisites } =
     request.body;
 
   if (!detectConflict(sections)) {
@@ -433,8 +444,18 @@ app.post("/course", async function (request, response) {
     course_name,
     credit,
     department,
-    sections
+    sections,
+    prerequisites
   };
+
+  if (!(await prereqLoopCheck(newCourse))) {
+    response.status(400);
+    response.json({
+      message: "loop detected in prerequisites, please check again"
+    });
+    return;
+  }
+
   if (request.user.type === 'admin') {
     newCourse.teacher_id = request.body.teacher_id
   } else if (request.user.type === 'teacher') {
@@ -452,7 +473,7 @@ app.post("/course", async function (request, response) {
 });
 
 app.put("/course", async function (request, response) {
-  const { _id, course_id, course_name, credit, department, sections } =
+  const { _id, course_id, course_name, credit, department, sections, prerequisites } =
     request.body;
 
   const courseItem = await course.findOne({_id: _id});
@@ -479,7 +500,17 @@ app.put("/course", async function (request, response) {
     credit,
     department,
     sections,
+    prerequisites
   };
+
+  if (!(await prereqLoopCheck(newCourse))) {
+    response.status(400);
+    response.json({
+      message: "loop detected in prerequisites, please check again"
+    });
+    return;
+  }
+
   if (request.user.type === 'admin' && request.body.teacher_id) {
     newCourse.teacher_id = request.body.teacher_id
   } else if (request.user.type === 'teacher') {

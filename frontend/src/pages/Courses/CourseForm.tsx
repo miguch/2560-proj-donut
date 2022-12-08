@@ -91,12 +91,22 @@ export default function CourseForm({
 
   const [teacherList, setTeacherList] = useState<Teacher[]>([]);
   const { user } = useUser();
+  const [courseList, setCourseList] = useState<Course[]>([]);
 
   useEffect(() => {
     if (user?.type === 'admin') {
       async function fetchOptions() {
         const data = await fetcher('/api/teacher');
         setTeacherList(data);
+        const courseData = await fetcher('/api/course');
+        setCourseList(
+          courseData.filter(
+            (item: Course, pos: number) =>
+              courseData.findIndex(
+                (e: Course) => e.course_id === item.course_id
+              ) === pos
+          )
+        );
       }
       fetchOptions();
     }
@@ -278,6 +288,15 @@ export default function CourseForm({
           >
             Remove
           </Button>
+        </Form.Item>
+        <Form.Item label="Prerequisites" field="prerequisites">
+          <Select mode="multiple">
+            {courseList.map((option, index) => (
+              <Select.Option key={option.course_id} value={option.course_id}>
+                {option.course_id}
+              </Select.Option>
+            ))}
+          </Select>
         </Form.Item>
       </Form>
     </Modal>
