@@ -55,7 +55,15 @@ export default function Header() {
         path:'/courses_students'
       },
     ],
-    student: [{ title: '', path: '' }],
+    student: [
+      { title: 'Course List', 
+        path: '/courselist',
+      },
+      {
+        title: 'Enrollment',
+        path: '/enrollment',
+      },
+    ],
   } as const;
 
   return (
