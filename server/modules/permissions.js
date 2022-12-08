@@ -15,5 +15,6 @@ const STATIC_PERMISSIONS = {
   '/drop_course': [STUDENT],
   '/register_course': [STUDENT],
   '/havechosen': [STUDENT]
+  '/courses_students':[TEACHER],
 };
 module.exports = STATIC_PERMISSIONS;

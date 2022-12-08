@@ -60,6 +60,14 @@ export const baseRouter = createBrowserRouter([
           </PageGuard>
         ),
       },
+      {
+        path: '/courses_students',
+        element: (
+          <PageGuard allowedRoles={[TEACHER]}>
+            <Students></Students>
+          </PageGuard>
+        ),
+      },
     ],
   },
   {
