@@ -42,6 +42,7 @@ export const ModalTableContainer = styled.div`
 export const TableExpandedContainer = styled.div`
   > * {
     margin-bottom: 8px;
+    flex: 1 1;
   }
   @media only screen and (min-width: 730px) {
     display: flex;

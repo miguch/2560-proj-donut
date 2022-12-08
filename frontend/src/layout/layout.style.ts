@@ -1,4 +1,4 @@
-import { css } from '@emotion/react';
+import { css } from '@emotion/css';
 import styled from '@emotion/styled';
 
 export const LayoutContainer = styled.div`
@@ -20,6 +20,7 @@ export const HeaderTitle = styled.div`
   font-size: 2rem;
   color: white;
   line-height: 4rem;
+  text-decoration: none;
 `;
 export const HeaderActions = styled.div`
   line-height: 4rem;
@@ -59,5 +60,20 @@ export const HeaderNavBar = styled.div`
 export const HeaderNavButton = styled.div`
   @media only screen and (min-width: 800px) {
     display: none;
+  }
+`;
+
+export const HomeContainer = styled.div``;
+
+export const ScheduleItemClass = css`
+  width: 20% !important;
+  @media only screen and (max-width: 750px) {
+    width: 25% !important;
+  }
+  @media only screen and (max-width: 600px) {
+    width: 33% !important;
+  }
+  @media only screen and (max-width: 480px) {
+    width: 50% !important;
   }
 `;

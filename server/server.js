@@ -559,7 +559,7 @@ app.put("/course", async function (request, response) {
   if (request.user.type === 'admin' && request.body.teacher_id) {
     newCourse.teacher_id = request.body.teacher_id
   } else if (request.user.type === 'teacher') {
-    if (courseItem.teacher_id !== request.user._id) {
+    if (!courseItem.teacher_id.equals(request.user._id)) {
       response.status(400);
       response.json({
         message: "cannot modify other teacher's course"

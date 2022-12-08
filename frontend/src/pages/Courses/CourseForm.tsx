@@ -95,22 +95,22 @@ export default function CourseForm({
   const [courseList, setCourseList] = useState<Course[]>([]);
 
   useEffect(() => {
-    if (user?.type === 'admin') {
-      async function fetchOptions() {
+    async function fetchOptions() {
+      if (user?.type === 'admin') {
         const data = await fetcher('/api/teacher');
         setTeacherList(data);
-        const courseData = await fetcher('/api/course');
-        setCourseList(
-          courseData.filter(
-            (item: Course, pos: number) =>
-              courseData.findIndex(
-                (e: Course) => e.course_id === item.course_id
-              ) === pos
-          )
-        );
       }
-      fetchOptions();
+      const courseData = await fetcher('/api/course?showFull=true');
+      setCourseList(
+        courseData.filter(
+          (item: Course, pos: number) =>
+            courseData.findIndex(
+              (e: Course) => e.course_id === item.course_id
+            ) === pos
+        )
+      );
     }
+    fetchOptions();
   }, [user]);
 
   const [sections, setSections] = useState<Section[]>([]);
@@ -299,10 +299,14 @@ export default function CourseForm({
             ))}
           </Select>
         </Form.Item>
-        <Form.Item triggerPropName='checked' label="Paused" field="isPaused">
+        <Form.Item triggerPropName="checked" label="Paused" field="isPaused">
           <Checkbox></Checkbox>
         </Form.Item>
-        <Form.Item triggerPropName='checked' label="Withdraw Only" field="withdrawOnly">
+        <Form.Item
+          triggerPropName="checked"
+          label="Withdraw Only"
+          field="withdrawOnly"
+        >
           <Checkbox></Checkbox>
         </Form.Item>
       </Form>

@@ -16,6 +16,7 @@ import Teachers from './pages/Teachers/Teachers';
 import CourseList from './pages/CoursesCouldChose/CoursesCouldChose';
 import Enrollment from './pages/CoursesHaveChosen/CoursesHaveChosen';
 import { User } from './types/User';
+import Home from './layout/Home';
 
 const ADMIN = 'admin';
 const TEACHER = 'teacher';
@@ -26,9 +27,13 @@ export const baseRouter = createBrowserRouter([
     path: '/',
     element: <Layout />,
     children: [
+      // {
+      //   path: '/onboarding',
+      //   element: <Onboarding></Onboarding>,
+      // },
       {
-        path: '/onboarding',
-        element: <Onboarding></Onboarding>,
+        path: '/',
+        element: <Home></Home>,
       },
       {
         path: '/students',
@@ -59,7 +64,7 @@ export const baseRouter = createBrowserRouter([
         element: (
           <PageGuard allowedRoles={[ADMIN, TEACHER]}>
             <Courses></Courses>
-            </PageGuard>
+          </PageGuard>
         ),
       },
       {

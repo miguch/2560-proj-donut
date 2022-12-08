@@ -3,7 +3,7 @@ import { IconMoon, IconNav, IconSun } from '@arco-design/web-react/icon';
 import { useState } from 'react';
 import useUser from '../hooks/useUser';
 import Avatar from './avatar';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, NavLink } from 'react-router-dom';
 import {
   HeaderActions,
   HeaderContainer,
@@ -48,16 +48,15 @@ export default function Header() {
     teacher: [
       {
         title: 'Courses',
-        path: '/courses'},
+        path: '/courses',
+      },
       {
         title: 'Students',
-        path:'/courses_students'
+        path: '/courses_students',
       },
     ],
     student: [
-      { title: 'Course List', 
-        path: '/courselist',
-      },
+      { title: 'Course List', path: '/courselist' },
       {
         title: 'Enrollment',
         path: '/enrollment',
@@ -94,7 +93,9 @@ export default function Header() {
             </Drawer>
           )}
         </HeaderNavButton>
-        <HeaderTitle>PittCourse?</HeaderTitle>
+        <NavLink to={'/'} style={{ textDecoration: 'none' }}>
+          <HeaderTitle>PittCourse</HeaderTitle>
+        </NavLink>
         <HeaderNavBar>
           {user?.type &&
             navigations[user.type].map(({ title, path }) => (

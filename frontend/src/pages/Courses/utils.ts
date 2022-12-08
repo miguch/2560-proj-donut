@@ -4,13 +4,13 @@ import objectSupport from 'dayjs/plugin/objectSupport';
 dayjs.extend(objectSupport);
 
 export const weekdays = [
+  'Sunday',
   'Monday',
   'Tuesday',
   'Wednesday',
   'Thursday',
   'Friday',
   'Saturday',
-  'Sunday',
 ];
 
 export const timeFmt = 'HH:mm';
