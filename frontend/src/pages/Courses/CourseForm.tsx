@@ -1,5 +1,6 @@
 import {
   Button,
+  Checkbox,
   Drawer,
   Form,
   Input,
@@ -297,6 +298,12 @@ export default function CourseForm({
               </Select.Option>
             ))}
           </Select>
+        </Form.Item>
+        <Form.Item label="Paused" field="isPaused">
+          <Checkbox></Checkbox>
+        </Form.Item>
+        <Form.Item label="Withdraw Only" field="withdrawOnly">
+          <Checkbox></Checkbox>
         </Form.Item>
       </Form>
     </Modal>

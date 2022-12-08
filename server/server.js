@@ -67,27 +67,24 @@ app.get("/", async function (request, response) {
 });
 
 //retrive courses which have been chosen by student
-app.post("/havechosen", async function (request, response) {
+app.get("/havechosen", async function (request, response) {
   const { student_id } = request.user
-  const course_list = await course.find({});
-  console.log(course_list);
   const res = await selection
     .find({ student_id: request.user._id })
-    .populate("course_id");
-  //找不在selction里面的course
-  console.log(res);
-  let map = {};
-  res.forEach((item) => {
-    map[item.course_id.course_id] = 1;
-  });
-  const result = course_list.filter((item) => {
-    return map[item.course_id] == 1;
-  });
-  response.send(result);
+    .populate({
+      path: "course_id",
+      populate: "teacher_id"
+    });
+  response.send(res.map(e => ({
+    ...e.course_id._doc,
+    grade: e.grade,
+    status: e.status,
+    selection_ref_id: e._id,
+  })));
 });
 
 ////retrive courses which have not been chosen by student
-app.post("/couldchose", async function (request, response) {
+app.get("/couldchose", async function (request, response) {
   const { student_id } = request.user
   const course_list = await course.find({}).populate("teacher_id");
   console.log(course_list);
@@ -169,9 +166,23 @@ app.post("/update_grade", async function (request, response) {
 //delete course of student
 app.post("/drop_course", async function (request, response) {
   const { student_id } = request.user
-  let { course_id } = request.body;
+  let { course_ref_id } = request.body;
   const stu = await student.findOne({ student_id: student_id });
-  const cou = await course.findOne({ course_id: course_id });
+  const cou = await course.findOne({ _id: course_ref_id });
+  if (!cou) {
+    response.status(404);
+    response.json({
+      message: 'course not found'
+    });
+    return;
+  }
+  if (cou.withdrawOnly) {
+    response.status(400);
+    response.json({
+      message: "Cannot drop course now, please contact your instructor to withdraw"
+    });
+    return;
+  }
   let result = await selection.deleteMany({
     course_id: cou._id,
     student_id: stu._id,
@@ -187,14 +198,29 @@ app.post("/drop_course", async function (request, response) {
 //create selection
 app.post("/register_course", async function (request, response) {
   const { student_id } = request.user
-  const { course_id } = request.body;
+  const { course_ref_id } = request.body;
   let stuRes;
   let courRes;
   stuRes = await student.findOne({ student_id: student_id });
-  courRes = await course.findOne({ course_id: course_id });
+  courRes = await course.findOne({ _id: course_ref_id });
+  if (!courRes) {
+    response.status(404);
+    response.json({
+      message: 'course not found'
+    });
+    return;
+  }
+  if (courRes.isPaused) {
+    response.status(400);
+    response.json({
+      message: "course is not offered as of now"
+    });
+    return;
+  }
   const newSelection = {
     student_id: stuRes._id,
     course_id: courRes._id,
+    status: 'enrolled'
   };
   console.log(newSelection);
   const res = await selection.create(newSelection);
@@ -426,7 +452,7 @@ app.get("/course", async function (request, response) {
 
 //Add course information
 app.post("/course", async function (request, response) {
-  const { course_id, course_name, credit, department, sections, prerequisites } =
+  const { course_id, course_name, credit, department, sections, prerequisites, isPaused, withdrawOnly } =
     request.body;
 
   if (!detectConflict(sections)) {
@@ -443,7 +469,9 @@ app.post("/course", async function (request, response) {
     credit,
     department,
     sections,
-    prerequisites
+    prerequisites,
+    isPaused,
+    withdrawOnly
   };
 
   if (!(await prereqLoopCheck(newCourse))) {
@@ -471,7 +499,7 @@ app.post("/course", async function (request, response) {
 });
 
 app.put("/course", async function (request, response) {
-  const { _id, course_id, course_name, credit, department, sections, prerequisites } =
+  const { _id, course_id, course_name, credit, department, sections, prerequisites, isPaused, withdrawOnly } =
     request.body;
 
   const courseItem = await course.findOne({_id: _id});
@@ -498,7 +526,9 @@ app.put("/course", async function (request, response) {
     credit,
     department,
     sections,
-    prerequisites
+    prerequisites, 
+    isPaused, 
+    withdrawOnly
   };
 
   if (!(await prereqLoopCheck(newCourse))) {

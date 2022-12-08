@@ -18,7 +18,8 @@ const courseSchema = new Schema({
         endTime: {type: Number}
     })
   ],
-  isPaused: { type: String },
+  isPaused: { type: Boolean },
+  withdrawOnly: { type: Boolean }
 });
 
 module.exports = mongoose.model('course', courseSchema);
