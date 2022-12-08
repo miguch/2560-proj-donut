@@ -13,6 +13,8 @@ import Onboarding from './pages/onboarding/onboarding';
 import PageGuard from './pages/PageGuard';
 import Students from './pages/Students/Students';
 import Teachers from './pages/Teachers/Teachers';
+import CourseList from './pages/Courses_stu/Courses_couldchose';
+import Enrollment from './pages/Courses_stu/Courses_havechosen';
 import { User } from './types/User';
 
 const ADMIN = 'admin';
@@ -57,6 +59,22 @@ export const baseRouter = createBrowserRouter([
         element: (
           <PageGuard allowedRoles={[ADMIN, TEACHER]}>
             <Courses></Courses>
+            </PageGuard>
+        ),
+      },
+      {
+        path: '/courselist',
+        element: (
+          <PageGuard allowedRoles={[STUDENT]}>
+            <CourseList></CourseList>
+          </PageGuard>
+        ),
+      },
+      {
+        path: '/enrollment',
+        element: (
+          <PageGuard allowedRoles={[STUDENT]}>
+            <Enrollment></Enrollment>
           </PageGuard>
         ),
       },
