@@ -11,7 +11,7 @@ import {
 } from '../pages.style';
 
 
-export default function Courses() {
+export default function CoursesHaveChosen() {
   const columns = useMemo(
     () => [
       {
@@ -38,16 +38,36 @@ export default function Courses() {
         key: 'teacher_id',
         title: 'Teacher',
         dataIndex: 'teacher_id',
-        render: (_: Number, record: Course) => (
+        render: (_: Number, record: Coursehavechosen) => (
           <>{`${(record.teacher_id as Teacher).teacher_name} (${
             (record.teacher_id as Teacher).teacher_id
           })`}</>
         ),
       },
       {
+        key: 'student_id',
+        title: 'Student',
+        dataIndex: 'student_id',
+        render: (_: Number, record: Coursehavechosen) => (
+          <>{`${(record.student_id as Student).student_name} (${
+            (record.student_id as Student).student_id
+          })`}</>
+        ),
+      },
+      {
+        key: 'grade',
+        title: 'Grade',
+        dataIndex: 'grade',
+      },
+      {
+        key: 'gpa',
+        title: 'Gpa',
+        dataIndex: 'gpa',
+      },
+      {
         key: 'action',
         title: 'Action',
-        render: (_: Number, item: Course) => (
+        render: (_: Number, item: Coursehavechosen) => (
           <>
             <Button
               onClick={() => {
@@ -55,7 +75,7 @@ export default function Courses() {
                 setFormVisible(true);
               }}
             >
-              Enroll
+              Drop
             </Button>
           </>
         ),
@@ -70,7 +90,7 @@ export default function Courses() {
   async function load() {
     setIsLoading(true);
     try {
-      const loaded = await fetcher('/api/couldchose');
+      const loaded = await fetcher('/api/havechosen');
       setData(loaded);
     } catch {
     } finally {
@@ -81,27 +101,10 @@ export default function Courses() {
     load();
   }, []);
 
-  const [editItem, setEditItem] = useState<Course | null>(null);
+  const [editItem, setEditItem] = useState<Coursehavechosen | null>(null);
   const [formVisible, setFormVisible] = useState<boolean>(false);
   return (
     <PageContainer>
-      {/* <PageTitle>
-        <Title heading={3} style={{ margin: 0 }}>
-          Courses
-        </Title>
-        <PageActions>
-          <Button
-            icon={<IconUserAdd />}
-            onClick={() => {
-              setEditItem(null);
-              setFormVisible(true);
-            }}
-          >
-            New
-          </Button>
-        </PageActions>
-      </PageTitle> */}
-
       <PageTableContainer>
         <Table
           rowKey={(item: any) => item._id}

@@ -13,8 +13,8 @@ import Onboarding from './pages/onboarding/onboarding';
 import PageGuard from './pages/PageGuard';
 import Students from './pages/Students/Students';
 import Teachers from './pages/Teachers/Teachers';
-import CourseList from './pages/Courses_stu/Courses_couldchose';
-import Enrollment from './pages/Courses_stu/Courses_havechosen';
+import CourseList from './pages/CoursesCouldChose/CoursesCouldChose';
+import Enrollment from './pages/CoursesHaveChosen/CoursesHaveChosen';
 import { User } from './types/User';
 
 const ADMIN = 'admin';
