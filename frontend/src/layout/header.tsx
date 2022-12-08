@@ -11,7 +11,6 @@ import {
   HeaderNavButton,
   HeaderTitle,
 } from './layout.style';
-
 export default function Header() {
   const isDarkMode = document.body.getAttribute('arco-theme') === 'dark';
   const [_, rerender] = useState({});

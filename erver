@@ -1,0 +1,613 @@
+[1mdiff --git a/frontend/src/layout/avatar.tsx b/frontend/src/layout/avatar.tsx[m
+[1mindex f037950..562fe13 100755[m
+[1m--- a/frontend/src/layout/avatar.tsx[m
+[1m+++ b/frontend/src/layout/avatar.tsx[m
+[36m@@ -6,6 +6,7 @@[m [mimport {[m
+   Menu,[m
+   Modal,[m
+ } from '@arco-design/web-react';[m
+[32m+[m[32mimport { IconGithub } from '@arco-design/web-react/icon';[m
+ import { useState } from 'react';[m
+ import { Link, useNavigate } from 'react-router-dom';[m
+ import useUser from '../hooks/useUser';[m
+[36m@@ -36,6 +37,11 @@[m [mexport default function Avatar() {[m
+     </Menu>[m
+   );[m
+ [m
+[32m+[m[32m  function onGitHubLink() {[m
+[32m+[m[32m    window.location.href =[m
+[32m+[m[32m      '/api/auth/github/link?r=' + encodeURIComponent(location.pathname);[m
+[32m+[m[32m  }[m
+[32m+[m
+   if (isLoading || !!error) {[m
+     return null;[m
+   }[m
+[36m@@ -58,12 +64,24 @@[m [mexport default function Avatar() {[m
+         visible={showProfile}[m
+         style={{ textAlign: 'center', maxWidth: '80%' }}[m
+       >[m
+[31m-        <Image src={user?.avatar || 'default.png'} width="50px" height="50px"></Image>[m
+[32m+[m[32m        <Image[m
+[32m+[m[32m          src={user?.avatar || 'default.png'}[m
+[32m+[m[32m          width="50px"[m
+[32m+[m[32m          height="50px"[m
+[32m+[m[32m        ></Image>[m
+         {[[m
+           {[m
+[31m-            label: 'Username',[m
+[32m+[m[32m            label: 'ID',[m
+             field: 'username',[m
+           },[m
+[32m+[m[32m          {[m
+[32m+[m[32m            label: 'Name',[m
+[32m+[m[32m            field: {[m
+[32m+[m[32m              student: 'student_name',[m
+[32m+[m[32m              teacher: 'teacher_name',[m
+[32m+[m[32m              admin: '',[m
+[32m+[m[32m            }[user!.type],[m
+[32m+[m[32m          },[m
+           {[m
+             label: 'Type',[m
+             field: 'type',[m
+[36m@@ -73,6 +91,12 @@[m [mexport default function Avatar() {[m
+             {label}: <b>{(user as any)[field]}</b>[m
+           </div>[m
+         ))}[m
+[32m+[m
+[32m+[m[32m        <div>GitHub Status: {user?.github_id ? 'Linked' : 'Not Linked'}</div>[m
+[32m+[m
+[32m+[m[32m        <Button type="primary" onClick={onGitHubLink} icon={<IconGithub />}>[m
+[32m+[m[32m          {user?.github_id ? 'Relink' : 'Link'} GitHub Acccount[m
+[32m+[m[32m        </Button>[m
+       </Modal>[m
+     </AvatarContainer>[m
+   );[m
+[1mdiff --git a/frontend/src/layout/header.tsx b/frontend/src/layout/header.tsx[m
+[1mindex 6292ce7..35f0a8e 100755[m
+[1m--- a/frontend/src/layout/header.tsx[m
+[1m+++ b/frontend/src/layout/header.tsx[m
+[36m@@ -37,9 +37,30 @@[m [mexport default function Header() {[m
+         title: 'Teachers',[m
+         path: '/teachers',[m
+       },[m
+[32m+[m[32m      {[m
+[32m+[m[32m        title: 'Accounts',[m
+[32m+[m[32m        path: '/accounts',[m
+[32m+[m[32m      },[m
+[32m+[m[32m      {[m
+[32m+[m[32m        title: 'Courses',[m
+[32m+[m[32m        path: '/courses',[m
+[32m+[m[32m      },[m
+[32m+[m[32m    ],[m
+[32m+[m[32m    teacher: [[m
+[32m+[m[32m      {[m
+[32m+[m[32m        title: 'Courses',[m
+[32m+[m[32m        path: '/courses',[m
+[32m+[m[32m      },[m
+[32m+[m[32m    ],[m
+[32m+[m[32m    student: [[m
+[32m+[m[32m      { title: 'Course List',[m[41m [m
+[32m+[m[32m        path: '/courselist',[m
+[32m+[m[32m      },[m
+[32m+[m[32m      {[m
+[32m+[m[32m        title: 'Enrollment',[m
+[32m+[m[32m        path: '/enrollment',[m
+[32m+[m[32m      },[m
+     ],[m
+[31m-    teacher: [{ title: '', path: '' }],[m
+[31m-    student: [{ title: '', path: '' }],[m
+   } as const;[m
+ [m
+   return ([m
+[36m@@ -57,22 +78,23 @@[m [mexport default function Header() {[m
+               onCancel={() => setDrawerVisible(false)}[m
+             >[m
+               <Menu style={{ backgroundColor: 'unset' }}>[m
+[31m-                {navigations[user.type].map(({ title, path }) => ([m
+[31m-                  <RouterLink[m
+[31m-                    onClick={() => setDrawerVisible(false)}[m
+[31m-                    to={path}[m
+[31m-                    key={path}[m
+[31m-                  >[m
+[31m-                    <Menu.Item key={path}>{title}</Menu.Item>[m
+[31m-                  </RouterLink>[m
+[31m-                ))}[m
+[32m+[m[32m                {user?.type &&[m
+[32m+[m[32m                  navigations[user.type].map(({ title, path }) => ([m
+[32m+[m[32m                    <RouterLink[m
+[32m+[m[32m                      onClick={() => setDrawerVisible(false)}[m
+[32m+[m[32m                      to={path}[m
+[32m+[m[32m                      key={path}[m
+[32m+[m[32m                    >[m
+[32m+[m[32m                      <Menu.Item key={path}>{title}</Menu.Item>[m
+[32m+[m[32m                    </RouterLink>[m
+[32m+[m[32m                  ))}[m
+               </Menu>[m
+             </Drawer>[m
+           )}[m
+         </HeaderNavButton>[m
+         <HeaderTitle>PittCourse?</HeaderTitle>[m
+         <HeaderNavBar>[m
+[31m-          {user &&[m
+[32m+[m[32m          {user?.type &&[m
+             navigations[user.type].map(({ title, path }) => ([m
+               <RouterLink key={path} to={path}>[m
+                 <Link>{title}</Link>[m
+[1mdiff --git a/frontend/src/pages/Students/Student.d.ts b/frontend/src/pages/Students/Student.d.ts[m
+[1mindex 930d9e5..95cedc0 100644[m
+[1m--- a/frontend/src/pages/Students/Student.d.ts[m
+[1m+++ b/frontend/src/pages/Students/Student.d.ts[m
+[36m@@ -5,5 +5,5 @@[m [minterface Student {[m
+   age: Number;[m
+   department: String;[m
+   fee: Number;[m
+[31m-  _id: Number | undefined;[m
+[32m+[m[32m  _id: Number | String | undefined;[m
+ }[m
+[1mdiff --git a/frontend/src/pages/Students/StudentForm.tsx b/frontend/src/pages/Students/StudentForm.tsx[m
+[1mindex 572cc33..f3ff31b 100644[m
+[1m--- a/frontend/src/pages/Students/StudentForm.tsx[m
+[1m+++ b/frontend/src/pages/Students/StudentForm.tsx[m
+[36m@@ -41,13 +41,13 @@[m [mexport default function StudentForm({[m
+       if (editItem) {[m
+         // update[m
+         const data = await fetcher('/api/student', {[m
+[31m-          method: 'POST',[m
+[32m+[m[32m          method: 'PUT',[m
+           body: JSON.stringify({ _id: editItem._id, ...formValues }),[m
+         });[m
+       } else {[m
+         // create[m
+         const data = await fetcher('/api/student', {[m
+[31m-          method: 'PUT',[m
+[32m+[m[32m          method: 'POST',[m
+           body: JSON.stringify(formValues),[m
+         });[m
+       }[m
+[1mdiff --git a/frontend/src/pages/Teachers/Teacher.d.ts b/frontend/src/pages/Teachers/Teacher.d.ts[m
+[1mindex 2649cc3..545b9fa 100644[m
+[1m--- a/frontend/src/pages/Teachers/Teacher.d.ts[m
+[1m+++ b/frontend/src/pages/Teachers/Teacher.d.ts[m
+[36m@@ -1,7 +1,7 @@[m
+[31m-interface Student {[m
+[32m+[m[32minterface Teacher {[m
+   teacher_id: String;[m
+   teacher_name: String;[m
+   department: String;[m
+   position: String;[m
+[31m-  _id: Number | undefined;[m
+[32m+[m[32m  _id: Number | String | undefined;[m
+ }[m
+[1mdiff --git a/frontend/src/pages/Teachers/TeacherForm.tsx b/frontend/src/pages/Teachers/TeacherForm.tsx[m
+[1mindex 244f213..1703f1a 100644[m
+[1m--- a/frontend/src/pages/Teachers/TeacherForm.tsx[m
+[1m+++ b/frontend/src/pages/Teachers/TeacherForm.tsx[m
+[36m@@ -11,11 +11,11 @@[m [mimport { useEffect, useState } from 'react';[m
+ import useFetch from '../../hooks/useFetch';[m
+ [m
+ interface TeacherFormProps {[m
+[31m-  editItem: Student | null;[m
+[32m+[m[32m  editItem: Teacher | null;[m
+   visible: boolean;[m
+   onClose: () => void;[m
+ }[m
+[31m-export default function StudentForm({[m
+[32m+[m[32mexport default function TeacherForm({[m
+   editItem,[m
+   visible,[m
+   onClose,[m
+[36m@@ -41,13 +41,13 @@[m [mexport default function StudentForm({[m
+       if (editItem) {[m
+         // update[m
+         const data = await fetcher('/api/teacher', {[m
+[31m-          method: 'POST',[m
+[32m+[m[32m          method: 'PUT',[m
+           body: JSON.stringify({ _id: editItem._id, ...formValues }),[m
+         });[m
+       } else {[m
+         // create[m
+         const data = await fetcher('/api/teacher', {[m
+[31m-          method: 'PUT',[m
+[32m+[m[32m          method: 'POST',[m
+           body: JSON.stringify(formValues),[m
+         });[m
+       }[m
+[36m@@ -61,7 +61,7 @@[m [mexport default function StudentForm({[m
+ [m
+   return ([m
+     <Modal[m
+[31m-      title="Student"[m
+[32m+[m[32m      title="Teacher"[m
+       visible={visible}[m
+       onCancel={onClose}[m
+       onOk={onSubmit}[m
+[1mdiff --git a/frontend/src/pages/Teachers/Teachers.tsx b/frontend/src/pages/Teachers/Teachers.tsx[m
+[1mindex f9cd3e0..76c0621 100644[m
+[1m--- a/frontend/src/pages/Teachers/Teachers.tsx[m
+[1m+++ b/frontend/src/pages/Teachers/Teachers.tsx[m
+[36m@@ -37,7 +37,7 @@[m [mexport default function Teachers() {[m
+       {[m
+         key: 'action',[m
+         title: 'Action',[m
+[31m-        render: (_: Number, item: Student) => ([m
+[32m+[m[32m        render: (_: Number, item: Teacher) => ([m
+           <>[m
+             <Button[m
+               onClick={() => {[m
+[36m@@ -71,7 +71,7 @@[m [mexport default function Teachers() {[m
+     load();[m
+   }, []);[m
+ [m
+[31m-  const [editItem, setEditItem] = useState<Student | null>(null);[m
+[32m+[m[32m  const [editItem, setEditItem] = useState<Teacher | null>(null);[m
+   const [formVisible, setFormVisible] = useState<boolean>(false);[m
+ [m
+   return ([m
+[1mdiff --git a/frontend/src/routes.tsx b/frontend/src/routes.tsx[m
+[1mindex d8aafc4..b7fcf26 100755[m
+[1m--- a/frontend/src/routes.tsx[m
+[1m+++ b/frontend/src/routes.tsx[m
+[36m@@ -5,12 +5,16 @@[m [mimport {[m
+   Link,[m
+ } from 'react-router-dom';[m
+ import Layout from './layout/layout';[m
+[32m+[m[32mimport Accounts from './pages/Accounts/Accounts';[m
+[32m+[m[32mimport Courses from './pages/Courses/Courses';[m
+ import LoginPage from './pages/login/login';[m
+ import NotFoundPage from './pages/NotFoundPage';[m
+ import Onboarding from './pages/onboarding/onboarding';[m
+ import PageGuard from './pages/PageGuard';[m
+ import Students from './pages/Students/Students';[m
+ import Teachers from './pages/Teachers/Teachers';[m
+[32m+[m[32mimport CourseList from './pages/Courses_stu/Courses_couldchose';[m
+[32m+[m[32mimport Enrollment from './pages/Courses_stu/Courses_havechosen';[m
+ import { User } from './types/User';[m
+ [m
+ const ADMIN = 'admin';[m
+[36m@@ -42,6 +46,38 @@[m [mexport const baseRouter = createBrowserRouter([[m
+           </PageGuard>[m
+         ),[m
+       },[m
+[32m+[m[32m      {[m
+[32m+[m[32m        path: '/accounts',[m
+[32m+[m[32m        element: ([m
+[32m+[m[32m          <PageGuard allowedRoles={[ADMIN]}>[m
+[32m+[m[32m            <Accounts></Accounts>[m
+[32m+[m[32m          </PageGuard>[m
+[32m+[m[32m        ),[m
+[32m+[m[32m      },[m
+[32m+[m[32m      {[m
+[32m+[m[32m        path: '/courses',[m
+[32m+[m[32m        element: ([m
+[32m+[m[32m          <PageGuard allowedRoles={[ADMIN, TEACHER]}>[m
+[32m+[m[32m            <Courses></Courses>[m
+[32m+[m[32m            </PageGuard>[m
+[32m+[m[32m        ),[m
+[32m+[m[32m      },[m
+[32m+[m[32m      {[m
+[32m+[m[32m        path: '/courselist',[m
+[32m+[m[32m        element: ([m
+[32m+[m[32m          <PageGuard allowedRoles={[STUDENT]}>[m
+[32m+[m[32m            <CourseList></CourseList>[m
+[32m+[m[32m          </PageGuard>[m
+[32m+[m[32m        ),[m
+[32m+[m[32m      },[m
+[32m+[m[32m      {[m
+[32m+[m[32m        path: '/enrollment',[m
+[32m+[m[32m        element: ([m
+[32m+[m[32m          <PageGuard allowedRoles={[STUDENT]}>[m
+[32m+[m[32m            <Enrollment></Enrollment>[m
+[32m+[m[32m          </PageGuard>[m
+[32m+[m[32m        ),[m
+[32m+[m[32m      },[m
+     ],[m
+   },[m
+   {[m
+[1mdiff --git a/frontend/src/types/User.ts b/frontend/src/types/User.ts[m
+[1mindex 1dd305d..8b18e1a 100755[m
+[1m--- a/frontend/src/types/User.ts[m
+[1m+++ b/frontend/src/types/User.ts[m
+[36m@@ -3,4 +3,9 @@[m [mexport interface User {[m
+   displayName: string;[m
+   avatar: string;[m
+   type: 'student' | 'teacher' | 'admin';[m
+[32m+[m[32m  _id?: String | undefined;[m
+[32m+[m[32m  student_name?: String;[m
+[32m+[m[32m  teacher_name?: String;[m
+[32m+[m[32m  department?: String;[m
+[32m+[m[32m  github_id?: String;[m
+ }[m
+[1mdiff --git a/package.json b/package.json[m
+[1mindex 9ba304b..bb22ba3 100644[m
+[1m--- a/package.json[m
+[1m+++ b/package.json[m
+[36m@@ -32,7 +32,8 @@[m
+     "react": "^18.2.0",[m
+     "react-dom": "^18.2.0",[m
+     "react-router-dom": "^6.4.3",[m
+[31m-    "swr": "^1.3.0"[m
+[32m+[m[32m    "swr": "^1.3.0",[m
+[32m+[m[32m    "unpipe": "^1.0.0"[m
+   },[m
+   "devDependencies": {[m
+     "@types/node": "^18.11.9",[m
+[1mdiff --git a/server/modules/auth.js b/server/modules/auth.js[m
+[1mindex b84f902..52195c4 100644[m
+[1m--- a/server/modules/auth.js[m
+[1m+++ b/server/modules/auth.js[m
+[36m@@ -52,7 +52,7 @@[m [mfunction registerPassport(app) {[m
+   app.use(passport.initialize());[m
+   app.use(passport.session());[m
+   app.use(async (req, res, next) => {[m
+[31m-    // authentication middleware[m
+[32m+[m[32m    // authentication & permission middleware[m
+     console.log(req.path, req.query);[m
+     if (req.path in permissions && permissions[req.path].length > 0) {[m
+       if (!(req.isAuthenticated() && req.user)) {[m
+[36m@@ -84,12 +84,74 @@[m [mapi.get([m
+   passport.authenticate('github', {[m
+     keepSessionInfo: true,[m
+   }),[m
+[31m-  function (req, res) {[m
+[31m-    if (req.session.returnUrl) {[m
+[31m-      res.redirect(req.session.returnUrl);[m
+[31m-      delete req.session.returnUrl;[m
+[32m+[m[32m  async function (req, res) {[m
+[32m+[m[32m    let userItem, accountItem;[m
+[32m+[m[32m    if (req.session.account) {[m
+[32m+[m[32m      // link the account to GitHub[m
+[32m+[m[32m      const { type, username } = req.session.account;[m
+[32m+[m[32m      if (type === 'student') {[m
+[32m+[m[32m        userItem = await studentUser.findOne({[m
+[32m+[m[32m          _id: req.session.account.account_id,[m
+[32m+[m[32m        });[m
+[32m+[m[32m        accountItem = await student.findOne({[m
+[32m+[m[32m          _id: req.session.account._id,[m
+[32m+[m[32m        });[m
+[32m+[m[32m      } else if (type === 'teacher') {[m
+[32m+[m[32m        userItem = await teacherUser.findOne({[m
+[32m+[m[32m          _id: req.session.account.account_id,[m
+[32m+[m[32m        });[m
+[32m+[m[32m        accountItem = await teacher.findOne({[m
+[32m+[m[32m          _id: req.session.account._id,[m
+[32m+[m[32m        });[m
+[32m+[m[32m      }[m
+[32m+[m[32m      await userItem.update({[m
+[32m+[m[32m        github_id: req.user.id,[m
+[32m+[m[32m      });[m
+[32m+[m[32m      delete req.session.account;[m
+[32m+[m[32m      return;[m
+[32m+[m[32m    } else {[m
+[32m+[m[32m      userItem = await studentUser.findOne({[m
+[32m+[m[32m        github_id: req.user.id,[m
+[32m+[m[32m      });[m
+[32m+[m[32m      if (userItem) {[m
+[32m+[m[32m        accountItem = await student.findOne({[m
+[32m+[m[32m          _id: userItem.username,[m
+[32m+[m[32m        });[m
+[32m+[m[32m      } else {[m
+[32m+[m[32m        userItem = await teacherUser.findOne({[m
+[32m+[m[32m          github_id: req.user.id,[m
+[32m+[m[32m        });[m
+[32m+[m[32m        accountItem = await teacher.findOne({[m
+[32m+[m[32m          _id: userItem.username,[m
+[32m+[m[32m        });[m
+[32m+[m[32m      }[m
+[32m+[m[32m    }[m
+[32m+[m[32m    if (userItem && accountItem) {[m
+[32m+[m[32m      req.login([m
+[32m+[m[32m        {[m
+[32m+[m[32m          ...accountItem._doc,[m
+[32m+[m[32m          username: accountItem.student_id || accountItem.teacher_id,[m
+[32m+[m[32m          type: accountItem.student_id ? 'student' : 'teacher',[m
+[32m+[m[32m          github_id: userItem.github_id,[m
+[32m+[m[32m          account_id: userItem._id,[m
+[32m+[m[32m        },[m
+[32m+[m[32m        function (err) {[m
+[32m+[m[32m          if (req.session.returnUrl) {[m
+[32m+[m[32m            res.redirect(req.session.returnUrl);[m
+[32m+[m[32m            delete req.session.returnUrl;[m
+[32m+[m[32m          } else {[m
+[32m+[m[32m            res.redirect('/');[m
+[32m+[m[32m          }[m
+[32m+[m[32m        }[m
+[32m+[m[32m      );[m
+     } else {[m
+[31m-      res.redirect('/');[m
+[32m+[m[32m      // normal login[m
+[32m+[m[32m      if (req.session.returnUrl) {[m
+[32m+[m[32m        res.redirect(req.session.returnUrl);[m
+[32m+[m[32m        delete req.session.returnUrl;[m
+[32m+[m[32m      } else {[m
+[32m+[m[32m        res.redirect('/');[m
+[32m+[m[32m      }[m
+     }[m
+   }[m
+ );[m
+[36m@@ -104,6 +166,18 @@[m [mapi.get('/github', (req, res, next) => {[m
+   })(req, res, next);[m
+ });[m
+ [m
+[32m+[m[32mapi.get('/github/link', (req, res, next) => {[m
+[32m+[m[32m  if (req.query.r) {[m
+[32m+[m[32m    req.session.returnUrl = req.query.r;[m
+[32m+[m[32m  }[m
+[32m+[m[32m  req.session.account = {[m
+[32m+[m[32m    ...req.user,[m
+[32m+[m[32m  };[m
+[32m+[m[32m  passport.authenticate('github', {[m
+[32m+[m[32m    keepSessionInfo: true,[m
+[32m+[m[32m  })(req, res, next);[m
+[32m+[m[32m});[m
+[32m+[m
+ function hashPasswd(pass, salt) {[m
+   salt = salt || crypto.randomBytes(16);[m
+   return new Promise((resolve, reject) => {[m
+[36m@@ -127,6 +201,8 @@[m [mapi.get('/user', (req, res, next) => {[m
+     });[m
+     return;[m
+   }[m
+[32m+[m
+[32m+[m[32m  console.log(req.user);[m
+   res.json({[m
+     status: 200,[m
+     data: req.user,[m
+[36m@@ -151,13 +227,16 @@[m [mapi.post('/signup', async (req, res, next) => {[m
+     if (!accountItem) {[m
+       res.json({[m
+         status: -1,[m
+[31m-        message: 'cannot find student info associated with ID ' + newUser.username,[m
+[32m+[m[32m        message:[m
+[32m+[m[32m          'cannot find student info associated with ID ' + newUser.username,[m
+       });[m
+       return;[m
+     }[m
+[31m-    if (await studentUser.findOne({[m
+[31m-      username: accountItem._id[m
+[31m-    })) {[m
+[32m+[m[32m    if ([m
+[32m+[m[32m      await studentUser.findOne({[m
+[32m+[m[32m        username: accountItem._id,[m
+[32m+[m[32m      })[m
+[32m+[m[32m    ) {[m
+       res.json({[m
+         status: -1,[m
+         message: 'Student ID already in use',[m
+[36m@@ -169,13 +248,16 @@[m [mapi.post('/signup', async (req, res, next) => {[m
+     if (!accountItem) {[m
+       res.json({[m
+         status: -1,[m
+[31m-        message: 'cannot find teacher info associated with ID ' + newUser.username,[m
+[32m+[m[32m        message:[m
+[32m+[m[32m          'cannot find teacher info associated with ID ' + newUser.username,[m
+       });[m
+       return;[m
+     }[m
+[31m-    if (await teacherUser.findOne({[m
+[31m-      username: accountItem._id[m
+[31m-    })) {[m
+[32m+[m[32m    if ([m
+[32m+[m[32m      await teacherUser.findOne({[m
+[32m+[m[32m        username: accountItem._id,[m
+[32m+[m[32m      })[m
+[32m+[m[32m    ) {[m
+       res.json({[m
+         status: -1,[m
+         message: 'Teacher ID already in use',[m
+[36m@@ -197,7 +279,13 @@[m [mapi.post('/signup', async (req, res, next) => {[m
+   ).create(newAccount);[m
+ [m
+   req.login([m
+[31m-    { ...accountItem, username: newUser.username, type: newUser.identity },[m
+[32m+[m[32m    {[m
+[32m+[m[32m      ...accountItem._doc,[m
+[32m+[m[32m      username: newUser.username,[m
+[32m+[m[32m      type: newUser.identity,[m
+[32m+[m[32m      github_id: userItem.github_id,[m
+[32m+[m[32m      account_id: userItem._id,[m
+[32m+[m[32m    },[m
+     function (err) {[m
+       if (err) {[m
+         return next(err);[m
+[36m@@ -267,7 +355,10 @@[m [mapi.post('/local', async (req, res, next) => {[m
+   }[m
+ [m
+   if (info.identity !== 'admin') {[m
+[31m-    const { key, salt } = await hashPasswd(info.password, Buffer.from(userItem.salt, 'hex'));[m
+[32m+[m[32m    const { key, salt } = await hashPasswd([m
+[32m+[m[32m      info.password,[m
+[32m+[m[32m      Buffer.from(userItem.salt, 'hex')[m
+[32m+[m[32m    );[m
+     if (key.toString('hex') !== userItem.password) {[m
+       res.json({[m
+         status: -1,[m
+[36m@@ -277,12 +368,13 @@[m [mapi.post('/local', async (req, res, next) => {[m
+     }[m
+   }[m
+ [m
+[31m-  // TODO: add student/teacher info[m
+   req.login([m
+     {[m
+[31m-      ...accountItem,[m
+[32m+[m[32m      ...accountItem._doc,[m
+       username: info.username,[m
+       type: info.identity,[m
+[32m+[m[32m      github_id: userItem.github_id,[m
+[32m+[m[32m      account_id: userItem._id,[m
+     },[m
+     function (err) {[m
+       if (err) {[m
+[1mdiff --git a/server/modules/permissions.js b/server/modules/permissions.js[m
+[1mindex cf52858..77ea3ec 100644[m
+[1m--- a/server/modules/permissions.js[m
+[1m+++ b/server/modules/permissions.js[m
+[36m@@ -3,11 +3,12 @@[m [mconst TEACHER = 'teacher';[m
+ const STUDENT = 'student';[m
+ [m
+ const STATIC_PERMISSIONS = {[m
+[31m-  '/login': [],[m
+[31m-  '/accountadded': [],[m
+[31m-  '/students': [ADMIN],[m
+[32m+[m[32m  '/account': [ADMIN],[m
+   '/auth/user': [],[m
+[31m-  '/student': [ADMIN][m
+[32m+[m[32m  '/student': [ADMIN],[m
+[32m+[m[32m  '/teacher': [ADMIN],[m
+[32m+[m[32m  '/github/link': [TEACHER, STUDENT],[m
+[32m+[m[32m  '/course': [ADMIN, TEACHER],[m
+ };[m
+ [m
+ module.exports = STATIC_PERMISSIONS;[m
+[1mdiff --git a/server/schema/studentUser.js b/server/schema/studentUser.js[m
+[1mindex d1fa4fe..6a7c8a4 100644[m
+[1m--- a/server/schema/studentUser.js[m
+[1m+++ b/server/schema/studentUser.js[m
+[36m@@ -4,6 +4,7 @@[m [mconst Schema = mongoose.Schema;[m
+ const userSchema = new Schema({[m
+     "username": {type: Schema.Types.ObjectId, ref: 'student' },[m
+     "password": {type: String},[m
+[31m-    "salt": {type: String}[m
+[32m+[m[32m    "salt": {type: String},[m
+[32m+[m[32m    "github_id": {type: String}[m
+ })[m
+ module.exports = mongoose.model("studentUser", userSchema);[m
+\ No newline at end of file[m
+[1mdiff --git a/server/schema/teacherUser.js b/server/schema/teacherUser.js[m
+[1mindex 26074b1..3ad4472 100644[m
+[1m--- a/server/schema/teacherUser.js[m
+[1m+++ b/server/schema/teacherUser.js[m
+[36m@@ -4,6 +4,7 @@[m [mconst Schema = mongoose.Schema;[m
+ const userSchema = new Schema({[m
+     "username": {type: Schema.Types.ObjectId, ref: 'teacher' },[m
+     "password": {type: String},[m
+[31m-    "salt": {type: String}[m
+[32m+[m[32m    "salt": {type: String},[m
+[32m+[m[32m    "github_id": {type: String}[m
+ })[m
+ module.exports = mongoose.model("teacherUser", userSchema);[m
+\ No newline at end of file[m
+[1mdiff --git a/server/server.js b/server/server.js[m
+[1mindex f44943a..9c9f530 100644[m
+[1m--- a/server/server.js[m
+[1m+++ b/server/server.js[m
+[36m@@ -47,6 +47,7 @@[m [mconst teacher = require("./schema/teacher.js");[m
+ const selection = require("./schema/selection.js");[m
+ const teacherUser = require("./schema/teacherUser.js");[m
+ const studentUser = require("./schema/studentUser.js");[m
+[32m+[m[32mconst res = require("express/lib/response");[m
+ [m
+ // const abc = new mongoose.Schema({test: String})[m
+ // const abcModel = mongoose.model("abc", abc);[m
+[36m@@ -58,110 +59,52 @@[m [mapp.get("/", async function (request, response) {[m
+     message: "Please see the README.md for documentation",[m
+   });[m
+ });[m
+[31m-[m
+[31m-//get all information of studnets[m
+[31m-app.get("/students", async function (request, response) {[m
+[31m-  const student_list = await student.find({});[m
+[31m-  console.log(student_list);[m
+[31m-  if (!student_list) {[m
+[31m-    response.send("cannot find students");[m
+[32m+[m[32m//get courses from havechosen[m
+[32m+[m[32mapp.get("/havechosen", async function (request, res

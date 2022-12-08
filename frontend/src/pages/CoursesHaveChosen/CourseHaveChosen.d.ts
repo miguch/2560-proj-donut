@@ -1,4 +1,4 @@
-interface Course_chosen {
+interface Coursehavechosen {
   course_id: String;
   course_name: String;
   credit: Number;
