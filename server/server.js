@@ -94,7 +94,7 @@ app.get("/couldchose", async function (request, response) {
   //find the course which is not in selection
   console.log(res);
   let map = {};
-  res.forEach((item) => {
+  res.filter(e => (e.status === 'completed' || e.status === 'enrolled')).forEach((item) => {
     map[item.course_id.course_id] = 1;
   });
   const result = course_list.filter((item) => {
