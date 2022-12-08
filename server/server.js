@@ -21,6 +21,12 @@ const fs = require("fs");
 const cors = require('cors');
 const {registerPassport, loginApi} = require('./modules/auth')
 
+const detectConflict = require("./validation/timeValidation")
+const {
+  prerequisiteCheck,
+  prereqLoopCheck
+} = require("./validation/prerequisiteCheck");
+
 app.use(express.json());
 app.use(cors());
 
@@ -59,49 +65,42 @@ app.get("/", async function (request, response) {
     message: "Please see the README.md for documentation",
   });
 });
-//get courses from havechosen
+
+//retrive courses which have been chosen by student
 app.get("/havechosen", async function (request, response) {
-  const course_list = await course.find({}).populate("teacher_id");
-  console.log(course_list);
-  if (!course_list) {
-    response.send("Cannot find course");
-    return;
-  }
-  response.send(course_list);
+  const { student_id } = request.user
+  const res = await selection
+    .find({ student_id: request.user._id })
+    .populate({
+      path: "course_id",
+      populate: "teacher_id"
+    });
+  response.send(res.map(e => ({
+    ...e.course_id._doc,
+    grade: e.grade,
+    status: e.status,
+    selection_ref_id: e._id,
+  })));
 });
 
-// //retrive courses which have been chosen by student
-// app.post("/havechosen", async function (request, response) {
-//   const { student_id } = request.user
-//   const course_list = await course.find({});
-//   console.log(course_list);
-//   const stu = await student.findOne({ student_id: student_id });
-//   console.log(stu);
-//   student_id = stu._id;
-//   const res = await selection
-//     .find({ student_id: student_id })
-//     .populate("course_id");
-//   //找不在selction里面的course
-//   console.log(res);
-//   let map = {};
-//   res.forEach((item) => {
-//     map[item.course_id.course_id] = 1;
-//   });
-//   const result = course_list.filter((item) => {
-//     return map[item.course_id] == 1;
-//   });
-//   response.send(result);
-// });
-
-//get courses from couldchosen
+////retrive courses which have not been chosen by student
 app.get("/couldchose", async function (request, response) {
+  const { student_id } = request.user
   const course_list = await course.find({}).populate("teacher_id");
   console.log(course_list);
-  if (!course_list) {
-    response.send("Cannot find course");
-    return;
-  }
-  response.send(course_list);
+  const res = await selection
+    .find({ student_id: request.user._id })
+    .populate("course_id");
+  //find the course which is not in selection
+  console.log(res);
+  let map = {};
+  res.forEach((item) => {
+    map[item.course_id.course_id] = 1;
+  });
+  const result = course_list.filter((item) => {
+    return map[item.course_id] !== 1;
+  });
+  response.send(result);
 });
 
 app.post("/grade", async function (request, response) {
@@ -118,8 +117,6 @@ app.post("/grade", async function (request, response) {
   }
   response.send(selectionRes);
 });
-
-
 
 //get student from course
 app.post("/course_students", async function (request, response) {
@@ -169,9 +166,23 @@ app.post("/update_grade", async function (request, response) {
 //delete course of student
 app.post("/drop_course", async function (request, response) {
   const { student_id } = request.user
-  let { course_id } = request.body;
+  let { course_ref_id } = request.body;
   const stu = await student.findOne({ student_id: student_id });
-  const cou = await course.findOne({ course_id: course_id });
+  const cou = await course.findOne({ _id: course_ref_id });
+  if (!cou) {
+    response.status(404);
+    response.json({
+      message: 'course not found'
+    });
+    return;
+  }
+  if (cou.withdrawOnly) {
+    response.status(400);
+    response.json({
+      message: "Cannot drop course now, please contact your instructor to withdraw"
+    });
+    return;
+  }
   let result = await selection.deleteMany({
     course_id: cou._id,
     student_id: stu._id,
@@ -187,14 +198,29 @@ app.post("/drop_course", async function (request, response) {
 //create selection
 app.post("/register_course", async function (request, response) {
   const { student_id } = request.user
-  const { course_id } = request.body;
+  const { course_ref_id } = request.body;
   let stuRes;
   let courRes;
   stuRes = await student.findOne({ student_id: student_id });
-  courRes = await course.findOne({ course_id: course_id });
+  courRes = await course.findOne({ _id: course_ref_id });
+  if (!courRes) {
+    response.status(404);
+    response.json({
+      message: 'course not found'
+    });
+    return;
+  }
+  if (courRes.isPaused) {
+    response.status(400);
+    response.json({
+      message: "course is not offered as of now"
+    });
+    return;
+  }
   const newSelection = {
     student_id: stuRes._id,
     course_id: courRes._id,
+    status: 'enrolled'
   };
   console.log(newSelection);
   const res = await selection.create(newSelection);
@@ -260,6 +286,17 @@ app.delete("/account", async function (request, response) {
   response.json({
     status: 200
   })
+});
+
+app.get("/student_list", async function (request, response) {
+  // student list that can be accessed by teachers and students
+  const student_list = await student.find({});
+  console.log(student_list);
+  if (!student_list) {
+    response.send("Cannot find students");
+    return;
+  }
+  response.send(student_list);
 });
 
 app.get("/student", async function (request, response) {
@@ -395,7 +432,9 @@ app.put("/teacher", async function (request, response) {
 //find all courses in database
 app.get("/course", async function (request, response) {
   let course_list;
-  if (request.user.type === 'admin') {
+  if (request.user.type === 'admin' || 
+    (request.user.type === 'teacher' 
+    && request.query.showFull)) {
     course_list = await course.find({}).populate("teacher_id");
   } else if (request.user.type === 'teacher') {
     const teacher_id = request.user._id;
@@ -413,15 +452,36 @@ app.get("/course", async function (request, response) {
 
 //Add course information
 app.post("/course", async function (request, response) {
-  const { course_id, course_name, credit, department } =
+  const { course_id, course_name, credit, department, sections, prerequisites, isPaused, withdrawOnly } =
     request.body;
+
+  if (!detectConflict(sections)) {
+    response.status(400);
+    response.json({
+      message: "Conflict detected in sections"
+    });
+    return;
+  }
 
   const newCourse = {
     course_id,
     course_name,
     credit,
     department,
+    sections,
+    prerequisites,
+    isPaused,
+    withdrawOnly
   };
+
+  if (!(await prereqLoopCheck(newCourse))) {
+    response.status(400);
+    response.json({
+      message: "loop detected in prerequisites, please check again"
+    });
+    return;
+  }
+
   if (request.user.type === 'admin') {
     newCourse.teacher_id = request.body.teacher_id
   } else if (request.user.type === 'teacher') {
@@ -439,16 +499,24 @@ app.post("/course", async function (request, response) {
 });
 
 app.put("/course", async function (request, response) {
-  const { _id, course_id, course_name, credit, department } =
+  const { _id, course_id, course_name, credit, department, sections, prerequisites, isPaused, withdrawOnly } =
     request.body;
 
   const courseItem = await course.findOne({_id: _id});
 
   if (!courseItem) {
-    res.status(404);
-    res.json({
+    response.status(404);
+    response.json({
       message: "Not found"
     })
+    return;
+  }
+
+  if (!detectConflict(sections)) {
+    response.status(400);
+    response.json({
+      message: "Conflict detected in sections"
+    });
     return;
   }
 
@@ -457,13 +525,26 @@ app.put("/course", async function (request, response) {
     course_name,
     credit,
     department,
+    sections,
+    prerequisites, 
+    isPaused, 
+    withdrawOnly
   };
+
+  if (!(await prereqLoopCheck(newCourse))) {
+    response.status(400);
+    response.json({
+      message: "loop detected in prerequisites, please check again"
+    });
+    return;
+  }
+
   if (request.user.type === 'admin' && request.body.teacher_id) {
     newCourse.teacher_id = request.body.teacher_id
   } else if (request.user.type === 'teacher') {
     if (courseItem.teacher_id !== request.user._id) {
-      res.status(400);
-      res.json({
+      response.status(400);
+      response.json({
         message: "cannot modify other teacher's course"
       })
       return
@@ -487,8 +568,8 @@ app.delete("/course", async function (request, response) {
   const courseItem = await course.findOne({_id: _id});
 
   if (!courseItem) {
-    res.status(404);
-    res.json({
+    response.status(404);
+    response.json({
       message: "Not found"
     })
     return;
@@ -496,8 +577,8 @@ app.delete("/course", async function (request, response) {
 
   if (request.user.type === 'teacher') {
     if (courseItem.teacher_id !== request.user._id) {
-      res.status(400);
-      res.json({
+      response.status(400);
+      response.json({
         message: "cannot modify other teacher's course"
       })
       return

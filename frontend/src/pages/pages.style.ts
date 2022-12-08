@@ -26,3 +26,15 @@ export const PageTableContainer = styled.div`
     }
   }
 `;
+
+export const ModalTableContainer = styled.div`
+  .arco-table-content-inner {
+    overflow-x: auto;
+    .arco-table-cell {
+      word-break: unset;
+    }
+  }
+  .arco-table-td {
+    padding: 4px;
+  }
+`;

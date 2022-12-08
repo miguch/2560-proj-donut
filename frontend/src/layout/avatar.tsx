@@ -92,11 +92,17 @@ export default function Avatar() {
           </div>
         ))}
 
-        <div>GitHub Status: {user?.github_id ? 'Linked' : 'Not Linked'}</div>
+        {user?.type !== 'admin' && (
+          <>
+            <div>
+              GitHub Status: {user?.github_id ? 'Linked' : 'Not Linked'}
+            </div>
 
-        <Button type="primary" onClick={onGitHubLink} icon={<IconGithub />}>
-          {user?.github_id ? 'Relink' : 'Link'} GitHub Acccount
-        </Button>
+            <Button type="primary" onClick={onGitHubLink} icon={<IconGithub />}>
+              {user?.github_id ? 'Relink' : 'Link'} GitHub Acccount
+            </Button>
+          </>
+        )}
       </Modal>
     </AvatarContainer>
   );

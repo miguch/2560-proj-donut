@@ -34,6 +34,14 @@ export default function Accounts() {
         dataIndex: 'department',
       },
       {
+        key: 'github',
+        title: 'GitHub',
+        dataIndex: 'department',
+        render: (_: Number, record: Account) => (
+          <>{record.is_github_linked && '✅️ Linked'}</>
+        ),
+      },
+      {
         key: 'action',
         title: 'Action',
         render: (_: Number, item: Account) => (
