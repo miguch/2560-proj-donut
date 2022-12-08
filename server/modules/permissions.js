@@ -3,11 +3,12 @@ const TEACHER = 'teacher';
 const STUDENT = 'student';
 
 const STATIC_PERMISSIONS = {
-  '/login': [],
-  '/accountadded': [],
-  '/students': [ADMIN],
+  '/account': [ADMIN],
   '/auth/user': [],
-  '/student': [ADMIN]
+  '/student': [ADMIN],
+  '/teacher': [ADMIN],
+  '/github/link': [TEACHER, STUDENT],
+  '/course': [ADMIN, TEACHER],
 };
 
 module.exports = STATIC_PERMISSIONS;

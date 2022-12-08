@@ -9,20 +9,25 @@ import {
   PageTableContainer,
   PageTitle,
 } from '../pages.style';
-import TeacherForm from './TeacherForm';
 
-export default function Teachers() {
+
+export default function Courses() {
   const columns = useMemo(
     () => [
       {
-        key: 'teacher_id',
-        title: 'Teacher ID',
-        dataIndex: 'teacher_id',
+        key: 'course_id',
+        title: 'Course ID',
+        dataIndex: 'course_id',
       },
       {
-        key: 'teacher_name',
+        key: 'course_name',
         title: 'Name',
-        dataIndex: 'teacher_name',
+        dataIndex: 'course_name',
+      },
+      {
+        key: 'credit',
+        title: 'Credit',
+        dataIndex: 'credit',
       },
       {
         key: 'department',
@@ -30,14 +35,39 @@ export default function Teachers() {
         dataIndex: 'department',
       },
       {
-        key: 'position',
-        title: 'Position',
-        dataIndex: 'position',
+        key: 'teacher_id',
+        title: 'Teacher',
+        dataIndex: 'teacher_id',
+        render: (_: Number, record: Course_chosen) => (
+          <>{`${(record.teacher_id as Teacher).teacher_name} (${
+            (record.teacher_id as Teacher).teacher_id
+          })`}</>
+        ),
+      },
+      {
+        key: 'student_id',
+        title: 'Student',
+        dataIndex: 'student_id',
+        render: (_: Number, record: Course_chosen) => (
+          <>{`${(record.student_id as Student).student_name} (${
+            (record.student_id as Student).student_id
+          })`}</>
+        ),
+      },
+      {
+        key: 'grade',
+        title: 'Grade',
+        dataIndex: 'grade',
+      },
+      {
+        key: 'gpa',
+        title: 'Gpa',
+        dataIndex: 'gpa',
       },
       {
         key: 'action',
         title: 'Action',
-        render: (_: Number, item: Teacher) => (
+        render: (_: Number, item: Course_chosen) => (
           <>
             <Button
               onClick={() => {
@@ -45,7 +75,7 @@ export default function Teachers() {
                 setFormVisible(true);
               }}
             >
-              Edit
+              Drop
             </Button>
           </>
         ),
@@ -60,7 +90,7 @@ export default function Teachers() {
   async function load() {
     setIsLoading(true);
     try {
-      const loaded = await fetcher('/api/teacher');
+      const loaded = await fetcher('/api/havechosen');
       setData(loaded);
     } catch {
     } finally {
@@ -71,14 +101,13 @@ export default function Teachers() {
     load();
   }, []);
 
-  const [editItem, setEditItem] = useState<Teacher | null>(null);
+  const [editItem, setEditItem] = useState<Course_chosen | null>(null);
   const [formVisible, setFormVisible] = useState<boolean>(false);
-
   return (
     <PageContainer>
-      <PageTitle>
+      {/* <PageTitle>
         <Title heading={3} style={{ margin: 0 }}>
-          Teachers
+          Courses
         </Title>
         <PageActions>
           <Button
@@ -91,7 +120,7 @@ export default function Teachers() {
             New
           </Button>
         </PageActions>
-      </PageTitle>
+      </PageTitle> */}
 
       <PageTableContainer>
         <Table
@@ -101,15 +130,7 @@ export default function Teachers() {
           loading={isLoading}
         ></Table>
       </PageTableContainer>
-
-      <TeacherForm
-        visible={formVisible}
-        onClose={() => {
-          setFormVisible(false);
-          load();
-        }}
-        editItem={editItem}
-      ></TeacherForm>
     </PageContainer>
   );
 }
+

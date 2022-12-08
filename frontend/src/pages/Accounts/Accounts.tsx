@@ -1,4 +1,4 @@
-import { Button, Table } from '@arco-design/web-react';
+import { Button, Popconfirm, Table } from '@arco-design/web-react';
 import Title from '@arco-design/web-react/es/Typography/title';
 import { IconUserAdd } from '@arco-design/web-react/icon';
 import { useEffect, useMemo, useState } from 'react';
@@ -9,20 +9,24 @@ import {
   PageTableContainer,
   PageTitle,
 } from '../pages.style';
-import TeacherForm from './TeacherForm';
 
-export default function Teachers() {
+export default function Accounts() {
   const columns = useMemo(
     () => [
       {
-        key: 'teacher_id',
-        title: 'Teacher ID',
-        dataIndex: 'teacher_id',
+        key: 'type',
+        title: 'Type',
+        dataIndex: 'type',
       },
       {
-        key: 'teacher_name',
+        key: 'id',
+        title: 'ID',
+        dataIndex: 'ref_id',
+      },
+      {
+        key: 'name',
         title: 'Name',
-        dataIndex: 'teacher_name',
+        dataIndex: 'name',
       },
       {
         key: 'department',
@@ -30,24 +34,26 @@ export default function Teachers() {
         dataIndex: 'department',
       },
       {
-        key: 'position',
-        title: 'Position',
-        dataIndex: 'position',
-      },
-      {
         key: 'action',
         title: 'Action',
-        render: (_: Number, item: Teacher) => (
-          <>
-            <Button
-              onClick={() => {
-                setEditItem(item);
-                setFormVisible(true);
-              }}
-            >
-              Edit
+        render: (_: Number, item: Account) => (
+          <Popconfirm
+            title="Are you sure you want to reset this account? The user will have to sign up again"
+            onConfirm={async () => {
+              await fetcher('/api/account', {
+                method: 'DELETE',
+                body: JSON.stringify({
+                  _id: item._id,
+                  type: item.type,
+                }),
+              });
+              load();
+            }}
+          >
+            <Button status="danger" type="primary">
+              Reset
             </Button>
-          </>
+          </Popconfirm>
         ),
       },
     ],
@@ -60,7 +66,7 @@ export default function Teachers() {
   async function load() {
     setIsLoading(true);
     try {
-      const loaded = await fetcher('/api/teacher');
+      const loaded = await fetcher('/api/account');
       setData(loaded);
     } catch {
     } finally {
@@ -71,26 +77,13 @@ export default function Teachers() {
     load();
   }, []);
 
-  const [editItem, setEditItem] = useState<Teacher | null>(null);
-  const [formVisible, setFormVisible] = useState<boolean>(false);
-
   return (
     <PageContainer>
       <PageTitle>
         <Title heading={3} style={{ margin: 0 }}>
-          Teachers
+          Accounts
         </Title>
-        <PageActions>
-          <Button
-            icon={<IconUserAdd />}
-            onClick={() => {
-              setEditItem(null);
-              setFormVisible(true);
-            }}
-          >
-            New
-          </Button>
-        </PageActions>
+        <PageActions></PageActions>
       </PageTitle>
 
       <PageTableContainer>
@@ -101,15 +94,6 @@ export default function Teachers() {
           loading={isLoading}
         ></Table>
       </PageTableContainer>
-
-      <TeacherForm
-        visible={formVisible}
-        onClose={() => {
-          setFormVisible(false);
-          load();
-        }}
-        editItem={editItem}
-      ></TeacherForm>
     </PageContainer>
   );
 }

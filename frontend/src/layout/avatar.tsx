@@ -6,6 +6,7 @@ import {
   Menu,
   Modal,
 } from '@arco-design/web-react';
+import { IconGithub } from '@arco-design/web-react/icon';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useUser from '../hooks/useUser';
@@ -36,6 +37,11 @@ export default function Avatar() {
     </Menu>
   );
 
+  function onGitHubLink() {
+    window.location.href =
+      '/api/auth/github/link?r=' + encodeURIComponent(location.pathname);
+  }
+
   if (isLoading || !!error) {
     return null;
   }
@@ -58,11 +64,23 @@ export default function Avatar() {
         visible={showProfile}
         style={{ textAlign: 'center', maxWidth: '80%' }}
       >
-        <Image src={user?.avatar || 'default.png'} width="50px" height="50px"></Image>
+        <Image
+          src={user?.avatar || 'default.png'}
+          width="50px"
+          height="50px"
+        ></Image>
         {[
           {
-            label: 'Username',
+            label: 'ID',
             field: 'username',
+          },
+          {
+            label: 'Name',
+            field: {
+              student: 'student_name',
+              teacher: 'teacher_name',
+              admin: '',
+            }[user!.type],
           },
           {
             label: 'Type',
@@ -73,6 +91,12 @@ export default function Avatar() {
             {label}: <b>{(user as any)[field]}</b>
           </div>
         ))}
+
+        <div>GitHub Status: {user?.github_id ? 'Linked' : 'Not Linked'}</div>
+
+        <Button type="primary" onClick={onGitHubLink} icon={<IconGithub />}>
+          {user?.github_id ? 'Relink' : 'Link'} GitHub Acccount
+        </Button>
       </Modal>
     </AvatarContainer>
   );
