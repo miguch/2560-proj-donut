@@ -31,6 +31,7 @@ export default function CourseForm({
   const [form] = useForm();
 
   useEffect(() => {
+    form.resetFields();
     if (editItem) {
       for (const field in editItem) {
         form.setFieldValue(field, (editItem as any)[field]);
@@ -41,7 +42,6 @@ export default function CourseForm({
       );
       setSections(editItem.sections || []);
     } else {
-      form.resetFields();
       if (user?.type === 'teacher') {
         form.setFieldValue('teacher_ref_id', user._id);
         form.setFieldValue('department', user.department);
@@ -299,10 +299,10 @@ export default function CourseForm({
             ))}
           </Select>
         </Form.Item>
-        <Form.Item label="Paused" field="isPaused">
+        <Form.Item triggerPropName='checked' label="Paused" field="isPaused">
           <Checkbox></Checkbox>
         </Form.Item>
-        <Form.Item label="Withdraw Only" field="withdrawOnly">
+        <Form.Item triggerPropName='checked' label="Withdraw Only" field="withdrawOnly">
           <Checkbox></Checkbox>
         </Form.Item>
       </Form>

@@ -166,7 +166,7 @@ app.post("/update_grade", async function (request, response) {
 //delete course of student
 app.post("/drop_course", async function (request, response) {
   const { student_id } = request.user
-  let { course_ref_id } = request.body;
+  let { selection_ref_id, course_ref_id } = request.body;
   const stu = await student.findOne({ student_id: student_id });
   const cou = await course.findOne({ _id: course_ref_id });
   if (!cou) {
@@ -183,14 +183,24 @@ app.post("/drop_course", async function (request, response) {
     });
     return;
   }
-  let result = await selection.deleteMany({
-    course_id: cou._id,
-    student_id: stu._id,
+  let result = await selection.findOne({
+    _id: selection_ref_id,
   });
   if (!result) {
-    response.send("delete error");
+    response.status(404);
+    response.json({
+      message: "Selection record not found"
+    });
     return;
   }
+  if (result.status !== 'enrolled') {
+    response.status(400);
+    response.json({
+      message: `Course is no longer droppable, the current status is ${result.status}`
+    });
+    return;
+  }
+  await result.remove();
   response.send(result);
   response.send("delete successful");
 });
@@ -214,6 +224,13 @@ app.post("/register_course", async function (request, response) {
     response.status(400);
     response.json({
       message: "course is not offered as of now"
+    });
+    return;
+  }
+  if (courRes.withdrawOnly) {
+    response.status(400);
+    response.json({
+      message: "course is not accepting students now"
     });
     return;
   }
