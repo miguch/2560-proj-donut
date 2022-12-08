@@ -1,4 +1,4 @@
-import { Button, Table } from '@arco-design/web-react';
+import { Button, List, Table, Typography } from '@arco-design/web-react';
 import Title from '@arco-design/web-react/es/Typography/title';
 import { IconUserAdd } from '@arco-design/web-react/icon';
 import { useEffect, useMemo, useState } from 'react';
@@ -8,8 +8,10 @@ import {
   PageContainer,
   PageTableContainer,
   PageTitle,
+  TableExpandedContainer,
 } from '../pages.style';
 import CourseForm from './CourseForm';
+import { valToTime, weekdays } from './utils';
 
 export default function Courses() {
   const columns = useMemo(
@@ -108,6 +110,31 @@ export default function Courses() {
           columns={columns}
           data={data}
           loading={isLoading}
+          expandedRowRender={(record) => (
+            <TableExpandedContainer>
+              <List
+                header="Course Sections"
+                dataSource={record.sections.map(
+                  (s) =>
+                    `${weekdays[s.weekday]} ${valToTime(
+                      s.startTime
+                    )}-${valToTime(s.endTime)}`
+                )}
+                render={(item, index) => (
+                  <List.Item key={index}>{item}</List.Item>
+                )}
+              ></List>
+              {record.prerequisites && record.prerequisites.length > 0 && (
+                <List
+                  header="Course Prerequisites"
+                  dataSource={record.prerequisites}
+                  render={(item, index) => (
+                    <List.Item key={index}>{item}</List.Item>
+                  )}
+                ></List>
+              )}
+            </TableExpandedContainer>
+          )}
         ></Table>
       </PageTableContainer>
 

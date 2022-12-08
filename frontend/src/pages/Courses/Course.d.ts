@@ -11,6 +11,6 @@ interface Course {
 
 interface Section {
   weekday: 0|1|2|3|4|5|6,
-  startTime: Number,
-  endTime: Number
+  startTime: number,
+  endTime: number
 }

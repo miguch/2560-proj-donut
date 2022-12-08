@@ -38,3 +38,15 @@ export const ModalTableContainer = styled.div`
     padding: 4px;
   }
 `;
+
+export const TableExpandedContainer = styled.div`
+  > * {
+    margin-bottom: 8px;
+  }
+  @media only screen and (min-width: 730px) {
+    display: flex;
+    > * {
+      margin-right: 16px;
+    }
+  }
+`;
