@@ -77,3 +77,15 @@ export const ScheduleItemClass = css`
     width: 50% !important;
   }
 `;
+
+
+export const CalendarCard = css`
+  width: calc(100% / 7) !important;
+
+  @media only screen and (max-width: 1250px) {
+    width: calc(100% / 4) !important;
+  }
+  @media only screen and (max-width: 720px) {
+    width: calc(100% / 2) !important;
+  }
+`
