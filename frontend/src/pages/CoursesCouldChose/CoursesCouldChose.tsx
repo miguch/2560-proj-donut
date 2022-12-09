@@ -72,7 +72,7 @@ export default function CoursesCouldChose() {
             }}
             okText="Yes"
           >
-            <Button loading={item._id === loadingId} type="primary" status="success">
+            <Button type="primary" status="success">
               Enroll
             </Button>
           </Popconfirm>
@@ -115,6 +115,17 @@ export default function CoursesCouldChose() {
                 </div>
                 <div>
                   <>Department: {record.department}</>
+                </div>
+                <div>
+                  <>Enrolled: {record.enrolledCount}</>
+                </div>
+                <div>
+                  <>
+                    Capacity:{" "}
+                    {typeof record.capacity !== 'undefined'
+                      ? record.capacity
+                      : 'N/A'}
+                  </>
                 </div>
                 <div>
                   <>Lecturer: {(record.teacher_id as Teacher).teacher_name}</>

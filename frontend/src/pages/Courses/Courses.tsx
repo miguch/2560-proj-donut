@@ -124,6 +124,17 @@ export default function Courses() {
                   <>Department: {record.department}</>
                 </div>
                 <div>
+                  <>Enrolled: {record.enrolledCount}</>
+                </div>
+                <div>
+                  <>
+                    Capacity:{" "}
+                    {typeof record.capacity !== 'undefined'
+                      ? record.capacity
+                      : 'N/A'}
+                  </>
+                </div>
+                <div>
                   <>
                     Lecturer:
                     {`${(record.teacher_id as Teacher).teacher_name} (${

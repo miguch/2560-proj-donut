@@ -140,6 +140,12 @@ export default function CourseForm({
         >
           <Input></Input>
         </Form.Item>
+        <Form.Item
+          label="Capacity"
+          field="capacity"
+        >
+          <InputNumber></InputNumber>
+        </Form.Item>
         <Form.Item rules={[{ required: true }]} label="Credit" field="credit">
           <InputNumber></InputNumber>
         </Form.Item>

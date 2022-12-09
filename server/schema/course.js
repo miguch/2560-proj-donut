@@ -10,16 +10,17 @@ const courseSchema = new Schema({
   prerequisites: [String],
   sections: [
     new Schema({
-        weekday: {type: Number},
-        // time are encoded as number of minutes 
-        // since the starts of the day
-        // i.e. 600 is 10:00, 1000 is 16:40 
-        startTime: {type: Number},
-        endTime: {type: Number}
-    })
+      weekday: { type: Number },
+      // time are encoded as number of minutes
+      // since the starts of the day
+      // i.e. 600 is 10:00, 1000 is 16:40
+      startTime: { type: Number },
+      endTime: { type: Number },
+    }),
   ],
+  capacity: { type: Number },
   isPaused: { type: Boolean },
-  withdrawOnly: { type: Boolean }
+  withdrawOnly: { type: Boolean },
 });
 
 module.exports = mongoose.model('course', courseSchema);

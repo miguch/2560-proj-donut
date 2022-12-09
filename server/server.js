@@ -54,6 +54,7 @@ const selection = require("./schema/selection.js");
 const teacherUser = require("./schema/teacherUser.js");
 const studentUser = require("./schema/studentUser.js");
 const res = require("express/lib/response");
+const { checkHasSpot, getEnrolledCount } = require("./validation/capacityCheck");
 
 // const abc = new mongoose.Schema({test: String})
 // const abcModel = mongoose.model("abc", abc);
@@ -75,11 +76,16 @@ app.get("/havechosen", async function (request, response) {
       path: "course_id",
       populate: "teacher_id"
     });
+
+  for (let item of res) {
+    item.enrolledCount = await getEnrolledCount(item.course_id._id);
+  }
   response.send(res.map(e => ({
     ...e.course_id._doc,
     grade: e.grade,
     status: e.status,
     selection_ref_id: e._id,
+    enrolledCount: e.enrolledCount
   })));
 });
 
@@ -100,7 +106,13 @@ app.get("/couldchose", async function (request, response) {
   const result = course_list.filter((item) => {
     return map[item.course_id] !== 1;
   });
-  response.send(result);
+  for (let item of result) {
+    item.enrolledCount = await getEnrolledCount(item._id);
+  }
+  response.send(result.map(e => ({
+    ...e._doc,
+    enrolledCount: e.enrolledCount
+  })));
 });
 
 //get student from course
@@ -262,6 +274,15 @@ app.post("/register_course", async function (request, response) {
     response.status(400);
     response.json({
       message: "course is not accepting students now"
+    });
+    return;
+  }
+
+  // check if course has capacity
+  if (!(await checkHasSpot(course_ref_id))) {
+    response.status(400);
+    response.json({
+      message: "course is full"
     });
     return;
   }
@@ -524,12 +545,18 @@ app.get("/course", async function (request, response) {
     response.send("Cannot find course");
     return;
   }
-  response.send(course_list);
+  for (let item of course_list) {
+    item.enrolledCount = await getEnrolledCount(item._id);
+  }
+  response.send(course_list.map(e => ({
+    ...e._doc,
+    enrolledCount: e.enrolledCount
+  })));
 });
 
 //Add course information
 app.post("/course", async function (request, response) {
-  const { course_id, course_name, credit, department, sections, prerequisites, isPaused, withdrawOnly } =
+  const { course_id, course_name, credit, department, sections, prerequisites, isPaused, withdrawOnly, capacity } =
     request.body;
 
   if (!detectConflict(sections)) {
@@ -548,7 +575,8 @@ app.post("/course", async function (request, response) {
     sections,
     prerequisites,
     isPaused,
-    withdrawOnly
+    withdrawOnly,
+    capacity
   };
 
   if (!(await prereqLoopCheck(newCourse))) {
@@ -576,7 +604,7 @@ app.post("/course", async function (request, response) {
 });
 
 app.put("/course", async function (request, response) {
-  const { _id, course_id, course_name, credit, department, sections, prerequisites, isPaused, withdrawOnly } =
+  const { _id, course_id, course_name, credit, department, sections, prerequisites, isPaused, withdrawOnly, capacity } =
     request.body;
 
   const courseItem = await course.findOne({_id: _id});
@@ -605,7 +633,8 @@ app.put("/course", async function (request, response) {
     sections,
     prerequisites, 
     isPaused, 
-    withdrawOnly
+    withdrawOnly,
+    capacity
   };
 
   if (!(await prereqLoopCheck(newCourse))) {

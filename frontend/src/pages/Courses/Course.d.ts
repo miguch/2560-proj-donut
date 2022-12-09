@@ -9,6 +9,8 @@ interface Course {
   sections: Array<Section>;
   isPaused: boolean;
   withdrawOnly: boolean;
+  capacity: number|undefined;
+  enrolledCount: number;
 }
 
 interface Section {
