@@ -4,11 +4,12 @@ interface Coursehavechosen {
   credit: Number;
   department: String;
   teacher_id: String | Teacher;
-  student_id: String | Student;
   status: 'enrolled' | 'completed' | 'failed' | 'withdrawn';
   selection_ref_id: string;
   sections: Array<Section>;
   grade: Number;
-  gpa: Number;
+  enrolledCount: number;
+  capacity: number | undefined;
   _id: Number | String | undefined;
+  prerequisites: Array<String>;
 }
