@@ -117,17 +117,16 @@ app.get("/couldchose", async function (request, response) {
 
 //get student from course
 app.post("/course_students", async function (request, response) {
-  let { course_id } = request.body;
-  console.log(course_id);
-  const courseRes = await course.findOne({ course_id: course_id });
+  let { course_ref_id } = request.body;
+  const courseRes = await course.findOne({ _id: course_ref_id });
   console.log(courseRes);
   if (!courseRes) {
+    response.status(404)
     response.send("cannot find the course");
+    return
   }
-  course_id = courseRes._id;
-  console.log(course_id);
   const selectionRes = await selection
-    .find({ course_id: course_id })
+    .find({ course_id: course_ref_id })
     .populate("course_id")
     .populate("student_id");
   console.log(selectionRes);
