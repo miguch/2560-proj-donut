@@ -1,4 +1,4 @@
-import { Button, List, Popconfirm, Table } from '@arco-design/web-react';
+import { Button, List, Popconfirm, Radio, Table } from '@arco-design/web-react';
 import Title from '@arco-design/web-react/es/Typography/title';
 import { IconUserAdd } from '@arco-design/web-react/icon';
 import { useEffect, useMemo, useState } from 'react';
@@ -94,7 +94,7 @@ export default function CoursesHaveChosen() {
   );
 
   const fetcher = useFetch();
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<Coursehavechosen[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   async function load() {
     setIsLoading(true);
@@ -110,15 +110,51 @@ export default function CoursesHaveChosen() {
     load();
   }, []);
 
+  const filterMap = {
+    all: ['enrolled', 'completed', 'failed', 'withdrawn'],
+    current: ['enrolled'],
+    past: ['completed', 'failed', 'withdrawn'],
+  };
+
+  const [statusFilter, setStatusFilter] = useState<'all' | 'current' | 'past'>(
+    'all'
+  );
+
   const [editItem, setEditItem] = useState<Coursehavechosen | null>(null);
   const [formVisible, setFormVisible] = useState<boolean>(false);
   return (
     <PageContainer>
+      <PageTitle>
+        <Title heading={3} style={{ margin: 0 }}>
+          Registered Courses
+        </Title>
+        <PageActions>
+          <Radio.Group
+            value={statusFilter}
+            type="button"
+            options={[
+              {
+                label: 'All',
+                value: 'all',
+              },
+              {
+                label: 'Current',
+                value: 'current',
+              },
+              {
+                label: 'Past',
+                value: 'past',
+              },
+            ]}
+            onChange={(v) => setStatusFilter(v)}
+          ></Radio.Group>
+        </PageActions>
+      </PageTitle>
       <PageTableContainer>
         <Table
           rowKey={(item: any) => item._id}
           columns={columns}
-          data={data}
+          data={data.filter((e) => filterMap[statusFilter].includes(e.status))}
           loading={isLoading}
           expandedRowRender={(record) => (
             <TableExpandedContainer>

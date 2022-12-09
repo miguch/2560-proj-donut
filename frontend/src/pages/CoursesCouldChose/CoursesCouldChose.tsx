@@ -57,7 +57,7 @@ export default function CoursesCouldChose() {
           <Popconfirm
             title="Ready to enroll in this course?"
             onOk={async () => {
-              setLoadingId(item._id as string)
+              setLoadingId(item._id as string);
               try {
                 await fetcher('/api/register_course', {
                   method: 'POST',
@@ -101,6 +101,11 @@ export default function CoursesCouldChose() {
 
   return (
     <PageContainer>
+      <PageTitle>
+        <Title heading={3} style={{ margin: 0 }}>
+          Available Courses
+        </Title>
+      </PageTitle>
       <PageTableContainer>
         <Table
           rowKey={(item: any) => item._id}
@@ -121,7 +126,7 @@ export default function CoursesCouldChose() {
                 </div>
                 <div>
                   <>
-                    Capacity:{" "}
+                    Capacity:{' '}
                     {typeof record.capacity !== 'undefined'
                       ? record.capacity
                       : 'N/A'}

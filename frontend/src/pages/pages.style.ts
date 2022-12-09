@@ -10,10 +10,16 @@ export const PageContainer = styled.div`
 export const PageTitle = styled.div`
   display: flex;
   justify-content: space-between;
+  @media only screen and (max-width: 550px) {
+    display: block;
+  }
 `;
 
 export const PageActions = styled.div`
   float: right;
+  @media only screen and (max-width: 550px) {
+    float: unset;
+  }
 `;
 
 export const PageTableContainer = styled.div`
