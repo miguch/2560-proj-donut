@@ -1,4 +1,4 @@
-import { Button, List, Table } from '@arco-design/web-react';
+import { Button, List, Popconfirm, Table } from '@arco-design/web-react';
 import Title from '@arco-design/web-react/es/Typography/title';
 import { IconUserAdd } from '@arco-design/web-react/icon';
 import { useEffect, useMemo, useState } from 'react';
@@ -14,6 +14,8 @@ import {
 } from '../pages.style';
 
 export default function CoursesCouldChose() {
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+
   const columns = useMemo(
     () => [
       {
@@ -30,13 +32,13 @@ export default function CoursesCouldChose() {
         key: 'credit',
         title: 'Credit',
         dataIndex: 'credit',
-        className: ColumnHideOnNarrow
+        className: ColumnHideOnNarrow,
       },
       {
         key: 'department',
         title: 'Department',
         dataIndex: 'department',
-        className: ColumnHideOnNarrow
+        className: ColumnHideOnNarrow,
       },
       {
         key: 'teacher_id',
@@ -52,18 +54,29 @@ export default function CoursesCouldChose() {
       {
         key: 'action',
         title: 'Action',
-        //_id
         render: (_: Number, item: Course) => (
-          <>
-            <Button
-              onClick={() => {
-                // setEditItem(item);
-                // setFormVisible(true);
-              }}
-            >
+          <Popconfirm
+            title="Ready to enroll in this course?"
+            onOk={async () => {
+              setLoadingId(item._id as string)
+              try {
+                await fetcher('/api/register_course', {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    course_ref_id: item._id,
+                  }),
+                });
+                load();
+              } finally {
+                setLoadingId(null);
+              }
+            }}
+            okText="Yes"
+          >
+            <Button loading={item._id === loadingId} type="primary" status="success">
               Enroll
             </Button>
-          </>
+          </Popconfirm>
         ),
       },
     ],

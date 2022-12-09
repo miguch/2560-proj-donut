@@ -4,7 +4,7 @@ interface Course {
   credit: Number;
   department: String;
   teacher_id: String | Teacher;
-  _id: Number | string | undefined;
+  _id: string | undefined;
   prerequisites: Array<String>;
   sections: Array<Section>;
   isPaused: boolean;

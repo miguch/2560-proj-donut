@@ -10,8 +10,10 @@ import {
   Select,
   Table,
   TimePicker,
+  Tooltip,
 } from '@arco-design/web-react';
 import useForm from '@arco-design/web-react/es/Form/useForm';
+import { IconQuestionCircle } from '@arco-design/web-react/icon';
 import { useEffect, useState } from 'react';
 import useFetch from '../../hooks/useFetch';
 import useUser from '../../hooks/useUser';
@@ -299,12 +301,38 @@ export default function CourseForm({
             ))}
           </Select>
         </Form.Item>
-        <Form.Item triggerPropName="checked" label="Paused" field="isPaused">
+        <Form.Item
+          triggerPropName="checked"
+          label={
+            <Tooltip content="If checked, this course won't be offered to students">
+              Paused
+              <IconQuestionCircle
+                style={{
+                  verticalAlign: 'middle',
+                  marginLeft: '2px',
+                  color: 'var(--color-text-3)',
+                }}
+              ></IconQuestionCircle>
+            </Tooltip>
+          }
+          field="isPaused"
+        >
           <Checkbox></Checkbox>
         </Form.Item>
         <Form.Item
           triggerPropName="checked"
-          label="Withdraw Only"
+          label={
+            <Tooltip content="If checked, this course won't accept new students and enrolled students won't be able to drop">
+              Withdraw Only
+              <IconQuestionCircle
+                style={{
+                  verticalAlign: 'middle',
+                  marginLeft: '2px',
+                  color: 'var(--color-text-3)',
+                }}
+              ></IconQuestionCircle>
+            </Tooltip>
+          }
           field="withdrawOnly"
         >
           <Checkbox></Checkbox>

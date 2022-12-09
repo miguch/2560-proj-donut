@@ -4,6 +4,7 @@ import { IconUserAdd } from '@arco-design/web-react/icon';
 import { useEffect, useMemo, useState } from 'react';
 import useFetch from '../../hooks/useFetch';
 import {
+  ColumnHideOnNarrow,
   PageActions,
   PageContainer,
   PageTableContainer,
@@ -30,16 +31,19 @@ export default function Courses() {
         key: 'credit',
         title: 'Credit',
         dataIndex: 'credit',
+        className: ColumnHideOnNarrow,
       },
       {
         key: 'department',
         title: 'Department',
         dataIndex: 'department',
+        className: ColumnHideOnNarrow,
       },
       {
         key: 'teacher_id',
         title: 'Teacher',
         dataIndex: 'teacher_id',
+        className: ColumnHideOnNarrow,
         render: (_: Number, record: Course) => (
           <>{`${(record.teacher_id as Teacher).teacher_name} (${
             (record.teacher_id as Teacher).teacher_id
@@ -112,6 +116,22 @@ export default function Courses() {
           loading={isLoading}
           expandedRowRender={(record) => (
             <TableExpandedContainer>
+              <div>
+                <div>
+                  <>Credit: {record.credit}</>
+                </div>
+                <div>
+                  <>Department: {record.department}</>
+                </div>
+                <div>
+                  <>
+                    Lecturer:
+                    {`${(record.teacher_id as Teacher).teacher_name} (${
+                      (record.teacher_id as Teacher).teacher_id
+                    })`}
+                  </>
+                </div>
+              </div>
               <List
                 header="Course Sections"
                 dataSource={record.sections.map(
