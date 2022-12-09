@@ -265,6 +265,22 @@ app.post("/register_course", async function (request, response) {
     });
     return;
   }
+
+  // check for time conflict
+  const activeSelectionItems = await selection.find({
+    student_id: stuRes._id,
+    status: "enrolled"
+  }).populate('course_id')
+  const enrolledSections = activeSelectionItems.map(e => e.course_id.sections).flat();
+  if (!detectConflict([...enrolledSections, ...courRes.sections])) {
+    response.status(400);
+    response.json({
+      message: "time conflict, please check your schedule"
+    });
+    return;
+  }
+
+  // check if course id has been enrolled
   const sameIdCourses = await course.find({ course_id: courRes.course_id });
   const selectionItem = await selection.findOne({
     student_id: stuRes._id,
