@@ -1,3 +1,4 @@
+import { css } from '@emotion/css';
 import styled from '@emotion/styled';
 
 export const PageContainer = styled.div`
@@ -51,3 +52,9 @@ export const TableExpandedContainer = styled.div`
     }
   }
 `;
+
+export const ColumnHideOnNarrow = css`
+  @media only screen and (max-width: 850px) {
+    display: none;
+  }
+`
