@@ -8,7 +8,11 @@ import { CalendarCard, HomeContainer, ScheduleItemClass } from './layout.style';
 
 export default function Home() {
   const { user } = useUser();
-  // return<></>
+
+  const greeting = useState(() => {
+    const greetingList = JSON.parse(`["Hello","Hi","Hey","G'day","Bonjour","Yo","Hola","Morning","Hallo","Ciao","Namaste","Hoi","M'athchomaroon","Hiya","Привет","مرحبا","Greetings","Aloha","こんにちは","Buenos dias","Heya","Olà","Howdy","שלום","Yooooooooooo!","你好","Fraeslis","여보세요","Sul sul","Achuta","ਸਤ ਸ੍ਰੀ ਅਕਾਲ","Χαίρετε","سلام"]`);
+    return greetingList[Math.floor(Math.random() * greetingList.length)];
+  });
 
   const [courseList, setCourseList] = useState<Course[][]>([]);
   const [selectionList, setSelectionList] = useState<Coursehavechosen[][]>([]);
@@ -59,7 +63,9 @@ export default function Home() {
     ),
     teacher: (
       <>
-        <Typography.Title heading={1}>Hi {user.teacher_name}!</Typography.Title>
+        <Typography.Title heading={1}>
+          {greeting}, {user.teacher_name}!
+        </Typography.Title>
         <Card title={`Schedule (${weekdays[currentDay]})`}>
           {courseList[currentDay]?.length === 0 ? (
             <>{'No course today, take a rest :)'}</>
@@ -126,7 +132,9 @@ export default function Home() {
     ),
     student: (
       <>
-        <Typography.Title heading={1}>Hi {user.student_name}!</Typography.Title>
+        <Typography.Title heading={1}>
+          {greeting}, {user.student_name}!
+        </Typography.Title>
         <Card title={`Schedule (${weekdays[currentDay]})`}>
           {selectionList[currentDay]?.length === 0 ? (
             <>{'No course today, time to catch up on some homework🤪'}</>
