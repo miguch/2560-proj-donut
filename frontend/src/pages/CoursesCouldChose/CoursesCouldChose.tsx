@@ -15,7 +15,6 @@ import {
 
 export default function CoursesCouldChose() {
   const [loadingId, setLoadingId] = useState<string | null>(null);
-
   const columns = useMemo(
     () => [
       {
