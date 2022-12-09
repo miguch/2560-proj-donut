@@ -1,4 +1,4 @@
-import { Button, Table } from '@arco-design/web-react';
+import { Button, List, Popconfirm, Table } from '@arco-design/web-react';
 import Title from '@arco-design/web-react/es/Typography/title';
 import { IconUserAdd } from '@arco-design/web-react/icon';
 import { useEffect, useMemo, useState } from 'react';
@@ -12,6 +12,7 @@ import {
 
 
 export default function CoursesHaveChosen() {
+  const [loadingId, setLoadingId] = useState<string | null>(null);
   const columns = useMemo(
     () => [
       {
@@ -44,16 +45,16 @@ export default function CoursesHaveChosen() {
           })`}</>
         ),
       },
-      {
-        key: 'student_id',
-        title: 'Student',
-        dataIndex: 'student_id',
-        render: (_: Number, record: Coursehavechosen) => (
-          <>{`${(record.student_id as Student).student_name} (${
-            (record.student_id as Student).student_id
-          })`}</>
-        ),
-      },
+      // {
+      //   key: 'student_id',
+      //   title: 'Student',
+      //   dataIndex: 'student_id',
+      //   render: (_: Number, record: Coursehavechosen) => (
+      //     <>{`${(record.student_id as Student).student_name} (${
+      //       (record.student_id as Student).student_id
+      //     })`}</>
+      //   ),
+      // },
       {
         key: 'grade',
         title: 'Grade',
@@ -68,16 +69,29 @@ export default function CoursesHaveChosen() {
         key: 'action',
         title: 'Action',
         render: (_: Number, item: Coursehavechosen) => (
-          <>
-            <Button
-              onClick={() => {
-                setEditItem(item);
-                setFormVisible(true);
-              }}
-            >
+          <Popconfirm
+            title="Ready to drop this course?"
+            onOk={async () => {
+              setLoadingId(item._id as string)
+              try {
+                await fetcher('/api/drop_course', {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    selection_ref_id: item.selection_ref_id,
+                    course_ref_id: item._id,
+                  }),
+                });
+                load();
+              } finally {
+                setLoadingId(null);
+              }
+            }}
+            okText="Yes"
+          >
+            <Button loading={item._id === loadingId} type="primary" status="success">
               Drop
             </Button>
-          </>
+          </Popconfirm>
         ),
       },
     ],
