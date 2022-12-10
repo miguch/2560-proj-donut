@@ -17,6 +17,7 @@ import CourseList from './pages/CoursesCouldChose/CoursesCouldChose';
 import Enrollment from './pages/CoursesHaveChosen/CoursesHaveChosen';
 import { User } from './types/User';
 import Home from './layout/Home';
+import CourseStudents from './pages/CourseStudents/CourseStudents';
 
 const ADMIN = 'admin';
 const TEACHER = 'teacher';
@@ -84,10 +85,10 @@ export const baseRouter = createBrowserRouter([
         ),
       },
       {
-        path: '/courses_students',
+        path: '/courses_students/:course_ref_id',
         element: (
           <PageGuard allowedRoles={[TEACHER]}>
-            <Students></Students>
+            <CourseStudents></CourseStudents>
           </PageGuard>
         ),
       },

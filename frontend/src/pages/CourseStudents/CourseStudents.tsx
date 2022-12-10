@@ -74,7 +74,7 @@ export default function CourseStudents() {
     setIsLoading(true);
     try {
       const fetchData = async () => {
-        const response = await fetcher(`/api/course_students`, {
+        const response = await fetcher(`/api/course_students/course_ref_id`, {
           method: 'POST',
           body: JSON.stringify({
             course_ref_id: course_ref_id,
@@ -112,15 +112,15 @@ export default function CourseStudents() {
           Students
         </Title>
         <PageActions>
-          <Button
+          {/* <Button
             icon={<IconUserAdd />}
-            onClick={() => {
-              setEditItem(null);
-              setFormVisible(true);
-            }}
+            // onClick={() => {
+            //   setEditItem(null);
+            //   setFormVisible(true);
+            // }}
           >
             New
-          </Button>
+          </Button> */}
         </PageActions>
       </PageTitle>
 
@@ -133,14 +133,14 @@ export default function CourseStudents() {
         ></Table>
       </PageTableContainer>
 
-      <CourseStudentForm
+      {/* <CourseStudentForm
         visible={formVisible}
         onClose={() => {
           setFormVisible(false);
           load();
         }}
         editItem={editItem}
-      ></CourseStudentForm>
+      ></CourseStudentForm> */}
     </PageContainer>
   );
 }

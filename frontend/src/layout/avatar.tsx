@@ -51,7 +51,7 @@ export default function Avatar() {
         <Image
           alt="user avatar"
           preview={false}
-          src={user?.avatar || 'default.png'}
+          src={user?.avatar || '/default.png'}
           style={{ cursor: 'pointer' }}
           width="100%"
         ></Image>

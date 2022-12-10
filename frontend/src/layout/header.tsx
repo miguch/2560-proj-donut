@@ -50,10 +50,6 @@ export default function Header() {
         title: 'Courses',
         path: '/courses',
       },
-      {
-        title: 'Students',
-        path: '/courses_students',
-      },
     ],
     student: [
       { title: 'Course List', path: '/courselist' },
