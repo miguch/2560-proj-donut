@@ -1,4 +1,4 @@
-interface Student {
+interface CourseStudent {
   student_id: String;
   student_name: String;
   gender: String;

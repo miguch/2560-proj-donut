@@ -10,9 +10,9 @@ import {
   PageTableContainer,
   PageTitle,
 } from '../pages.style';
-import StudentForm from './CourseStudentsForm';
+import CourseStudentForm from './CourseStudentForm';
 
-export default function Students() {
+export default function CourseStudents() {
   const columns = useMemo(
     () => [
       {
@@ -59,7 +59,7 @@ export default function Students() {
       //         Edit
       //       </Button>
       //     </>
-          
+
       //   ),
       // },
     ],
@@ -67,18 +67,23 @@ export default function Students() {
   );
 
   const fetcher = useFetch();
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<CourseStudent[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { course_ref_id } = useParams();
   async function load() {
     setIsLoading(true);
     try {
-      const { course_ref_id } = useParams();
       const fetchData = async () => {
-      const response = await fetcher(`/api/courses/${course_ref_id}`);
-      //const loaded = await fetcher('/api/course_student');
-      setData(response);
-    } }
-    catch (error) {
+        const response = await fetcher(`/api/course_students`, {
+          method: 'POST',
+          body: JSON.stringify({
+            course_ref_id: course_ref_id,
+          }),
+        });
+        //const loaded = await fetcher('/api/course_student');
+        setData(response);
+      };
+    } catch (error) {
       // Handle the error
       console.error(error);
       alert('An error occurred while fetching data from the API.');
@@ -97,7 +102,6 @@ export default function Students() {
   //   fetchData();
   // }, []);
 
-  
   // const [editItem, setEditItem] = useState<Student | null>(null);
   // const [formVisible, setFormVisible] = useState<boolean>(false);
 
@@ -129,14 +133,14 @@ export default function Students() {
         ></Table>
       </PageTableContainer>
 
-      <StudentForm
+      <CourseStudentForm
         visible={formVisible}
         onClose={() => {
           setFormVisible(false);
           load();
         }}
         editItem={editItem}
-      ></StudentForm>
+      ></CourseStudentForm>
     </PageContainer>
   );
 }
