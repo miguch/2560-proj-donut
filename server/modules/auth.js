@@ -28,7 +28,7 @@ function registerPassport(app) {
         callbackURL:
           'https://' +
           process.env.PROJECT_DOMAIN +
-          '.glitch.me/api/login/github/return',
+          '.glitch.me/api/auth/github/return',
       },
       function (accessToken, refreshToken, profile, cb) {
         return cb(null, profile);
@@ -52,19 +52,24 @@ function registerPassport(app) {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(async (req, res, next) => {
-    // authentication middleware
+    // authentication & permission middleware
     console.log(req.path, req.query);
     if (req.path in permissions && permissions[req.path].length > 0) {
-      if (
-        req.isAuthenticated() &&
-        req.user &&
-        permissions[req.path].includes(req.user.type)
-      ) {
-        return next();
+      if (!(req.isAuthenticated() && req.user)) {
+        res.status(401);
+        res.json({
+          message: 'user not login',
+        });
+        return;
       }
-      res.status(401);
-      res.end();
-      return;
+      if (!permissions[req.path].includes(req.user.type)) {
+        res.status(401);
+        res.json({
+          message: 'permission denied',
+        });
+        return;
+      }
+      return next();
     }
     return next();
   });
@@ -81,12 +86,74 @@ api.get(
   passport.authenticate('github', {
     keepSessionInfo: true,
   }),
-  function (req, res) {
-    if (req.session.returnUrl) {
-      res.redirect(req.session.returnUrl);
-      delete req.session.returnUrl;
+  async function (req, res) {
+    let userItem, accountItem;
+    if (req.session.account) {
+      // link the account to GitHub
+      const { type, username } = req.session.account;
+      if (type === 'student') {
+        userItem = await studentUser.findOne({
+          _id: req.session.account.account_id,
+        });
+        accountItem = await student.findOne({
+          _id: req.session.account._id,
+        });
+      } else if (type === 'teacher') {
+        userItem = await teacherUser.findOne({
+          _id: req.session.account.account_id,
+        });
+        accountItem = await teacher.findOne({
+          _id: req.session.account._id,
+        });
+      }
+      await userItem.update({
+        github_id: req.user.id,
+      });
+      delete req.session.account;
+      return;
     } else {
-      res.redirect('/');
+      userItem = await studentUser.findOne({
+        github_id: req.user.id,
+      });
+      if (userItem) {
+        accountItem = await student.findOne({
+          _id: userItem.username,
+        });
+      } else {
+        userItem = await teacherUser.findOne({
+          github_id: req.user.id,
+        });
+        accountItem = await teacher.findOne({
+          _id: userItem.username,
+        });
+      }
+    }
+    if (userItem && accountItem) {
+      req.login(
+        {
+          ...accountItem._doc,
+          username: accountItem.student_id || accountItem.teacher_id,
+          type: accountItem.student_id ? 'student' : 'teacher',
+          github_id: userItem.github_id,
+          account_id: userItem._id,
+        },
+        function (err) {
+          if (req.session.returnUrl) {
+            res.redirect(req.session.returnUrl);
+            delete req.session.returnUrl;
+          } else {
+            res.redirect('/');
+          }
+        }
+      );
+    } else {
+      // normal login
+      if (req.session.returnUrl) {
+        res.redirect(req.session.returnUrl);
+        delete req.session.returnUrl;
+      } else {
+        res.redirect('/');
+      }
     }
   }
 );
@@ -97,6 +164,18 @@ api.get('/github', (req, res, next) => {
   }
   passport.authenticate('github', {
     successReturnToOrRedirect: req.query.r,
+    keepSessionInfo: true,
+  })(req, res, next);
+});
+
+api.get('/github/link', (req, res, next) => {
+  if (req.query.r) {
+    req.session.returnUrl = req.query.r;
+  }
+  req.session.account = {
+    ...req.user,
+  };
+  passport.authenticate('github', {
     keepSessionInfo: true,
   })(req, res, next);
 });
@@ -116,6 +195,22 @@ function hashPasswd(pass, salt) {
   });
 }
 
+api.get('/user', (req, res, next) => {
+  if (!(req.isAuthenticated() && req.user)) {
+    res.status(401);
+    res.json({
+      message: 'user not login',
+    });
+    return;
+  }
+
+  console.log(req.user);
+  res.json({
+    status: 200,
+    data: req.user,
+  });
+});
+
 api.post('/signup', async (req, res, next) => {
   const newUser = req.body;
   const { error, value } = signupValidation.validate(newUser);
@@ -129,12 +224,24 @@ api.post('/signup', async (req, res, next) => {
   }
 
   let accountItem;
-  if (identity === 'student') {
+  if (newUser.identity === 'student') {
     accountItem = await student.findOne({ student_id: newUser.username });
     if (!accountItem) {
       res.json({
         status: -1,
-        message: 'cannot find student info associated with ' + username,
+        message:
+          'cannot find student info associated with ID ' + newUser.username,
+      });
+      return;
+    }
+    if (
+      await studentUser.findOne({
+        username: accountItem._id,
+      })
+    ) {
+      res.json({
+        status: -1,
+        message: 'Student ID already in use',
       });
       return;
     }
@@ -143,7 +250,19 @@ api.post('/signup', async (req, res, next) => {
     if (!accountItem) {
       res.json({
         status: -1,
-        message: 'cannot find teacher info associated with ' + username,
+        message:
+          'cannot find teacher info associated with ID ' + newUser.username,
+      });
+      return;
+    }
+    if (
+      await teacherUser.findOne({
+        username: accountItem._id,
+      })
+    ) {
+      res.json({
+        status: -1,
+        message: 'Teacher ID already in use',
       });
       return;
     }
@@ -153,22 +272,31 @@ api.post('/signup', async (req, res, next) => {
 
   const newAccount = {
     username: accountItem._id,
-    password: key,
-    salt,
+    password: key.toString('hex'),
+    salt: salt.toString('hex'),
   };
   const userItem = await (newUser.identity === 'teacher'
     ? teacherUser
     : studentUser
   ).create(newAccount);
 
-  req.login({ ...accountItem, username: newUser.username }, function (err) {
-    if (err) {
-      return next(err);
+  req.login(
+    {
+      ...accountItem._doc,
+      username: newUser.username,
+      type: newUser.identity,
+      github_id: userItem.github_id,
+      account_id: userItem._id,
+    },
+    function (err) {
+      if (err) {
+        return next(err);
+      }
+      res.json({
+        status: 200,
+      });
     }
-    res.json({
-      status: 200,
-    });
-  });
+  );
 });
 
 api.post('/local', async (req, res, next) => {
@@ -187,7 +315,7 @@ api.post('/local', async (req, res, next) => {
   let accountItem = {};
   if (info.identity === 'student') {
     accountItem = await student.findOne({ student_id: info.username });
-    if (!userItem) {
+    if (!accountItem) {
       res.json({
         status: -1,
         message: 'username or password incorrect',
@@ -199,7 +327,7 @@ api.post('/local', async (req, res, next) => {
     });
   } else if (info.identity === 'teacher') {
     accountItem = await teacher.findOne({ teacher_id: info.username });
-    if (!userItem) {
+    if (!accountItem) {
       res.json({
         status: -1,
         message: 'username or password incorrect',
@@ -215,7 +343,7 @@ api.post('/local', async (req, res, next) => {
       info.password === process.env.ADMIN_PASS
     ) {
       userItem = {
-        type: 'admin'
+        type: 'admin',
       };
     }
   }
@@ -228,28 +356,37 @@ api.post('/local', async (req, res, next) => {
     return;
   }
 
-  const { key, salt } = await hashPasswd(info.password, userItem.salt);
-  if (key.compare(userItem.password) !== 0) {
-    res.json({
-      status: -1,
-      message: 'username or password incorrect',
-    });
-    return;
+  if (info.identity !== 'admin') {
+    const { key, salt } = await hashPasswd(
+      info.password,
+      Buffer.from(userItem.salt, 'hex')
+    );
+    if (key.toString('hex') !== userItem.password) {
+      res.json({
+        status: -1,
+        message: 'username or password incorrect',
+      });
+      return;
+    }
   }
 
-  // TODO: add student/teacher info
-  req.login({
-    ...accountItem,
-    username: info.username,
-    type: info.identity
-  }, function (err) {
-    if (err) {
-      return next(err);
+  req.login(
+    {
+      ...accountItem._doc,
+      username: info.username,
+      type: info.identity,
+      github_id: userItem.github_id,
+      account_id: userItem._id,
+    },
+    function (err) {
+      if (err) {
+        return next(err);
+      }
+      res.json({
+        status: 200,
+      });
     }
-    res.json({
-      status: 200,
-    });
-  });
+  );
 });
 
 api.get('/logoff', function (req, res) {
