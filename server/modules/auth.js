@@ -60,12 +60,14 @@ function registerPassport(app) {
         res.json({
           message: 'user not login',
         });
+        return;
       }
       if (!permissions[req.path].includes(req.user.type)) {
         res.status(401);
         res.json({
           message: 'permission denied',
         });
+        return;
       }
       return next();
     }

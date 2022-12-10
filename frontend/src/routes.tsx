@@ -84,7 +84,7 @@ export const baseRouter = createBrowserRouter([
         ),
       },
       {
-        path: '/courses_students',
+        path: '/courses_students/:course_ref_id',
         element: (
           <PageGuard allowedRoles={[TEACHER]}>
             <Students></Students>

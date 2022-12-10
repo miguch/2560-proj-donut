@@ -2,7 +2,9 @@ import { Button, List, Table, Typography } from '@arco-design/web-react';
 import Title from '@arco-design/web-react/es/Typography/title';
 import { IconUserAdd } from '@arco-design/web-react/icon';
 import { useEffect, useMemo, useState } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import useFetch from '../../hooks/useFetch';
+import useUser from '../../hooks/useUser';
 import {
   ColumnHideOnNarrow,
   PageActions,
@@ -15,6 +17,8 @@ import CourseForm from './CourseForm';
 import { valToTime, weekdays } from './utils';
 
 export default function Courses() {
+  const { user } = useUser();
+  const navigate = useNavigate();
   const columns = useMemo(
     () => [
       {
@@ -66,6 +70,21 @@ export default function Courses() {
           </>
         ),
       },
+      ...(user && user.type === 'teacher'
+        ? [
+            {
+              key: 'magage',
+              title: 'Manage',
+              render: (_: Number, item: Course) => (
+                <>
+                  <NavLink to={'/courses_students/' + item._id}>
+                    <Button>Students</Button>
+                  </NavLink>
+                </>
+              ),
+            },
+          ]
+        : []),
     ],
     []
   );
@@ -128,7 +147,7 @@ export default function Courses() {
                 </div>
                 <div>
                   <>
-                    Capacity:{" "}
+                    Capacity:{' '}
                     {typeof record.capacity !== 'undefined'
                       ? record.capacity
                       : 'N/A'}
