@@ -1,10 +1,11 @@
-import { Button, Table } from '@arco-design/web-react';
+import { Button, Radio, Table } from '@arco-design/web-react';
 import Title from '@arco-design/web-react/es/Typography/title';
 import { IconUserAdd } from '@arco-design/web-react/icon';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom'; //
 import useFetch from '../../hooks/useFetch';
 import {
+  ColumnHideOnNarrow,
   PageActions,
   PageContainer,
   PageTableContainer,
@@ -19,31 +20,28 @@ export default function CourseStudents() {
         key: 'student_id',
         title: 'Student ID',
         dataIndex: 'student_id',
+        render: (_: undefined, item: CourseStudent) =>
+          (item.student_id as Student).student_id,
       },
       {
         key: 'student_name',
         title: 'Name',
         dataIndex: 'student_name',
-      },
-      {
-        key: 'gender',
-        title: 'Gender',
-        dataIndex: 'gender',
-      },
-      {
-        key: 'age',
-        title: 'Age',
-        dataIndex: 'age',
+        render: (_: undefined, item: CourseStudent) =>
+          (item.student_id as Student).student_name,
       },
       {
         key: 'department',
         title: 'Department',
         dataIndex: 'department',
+        render: (_: undefined, item: CourseStudent) =>
+          (item.student_id as Student).department,
+        className: ColumnHideOnNarrow,
       },
       {
-        key: 'fee',
-        title: 'Fee',
-        dataIndex: 'fee',
+        key: 'status',
+        title: 'Status',
+        dataIndex: 'status',
       },
       // {
       //   key: 'action',
@@ -73,37 +71,37 @@ export default function CourseStudents() {
   async function load() {
     setIsLoading(true);
     try {
-      const fetchData = async () => {
-        const response = await fetcher(`/api/course_students/course_ref_id`, {
-          method: 'POST',
-          body: JSON.stringify({
-            course_ref_id: course_ref_id,
-          }),
-        });
-        //const loaded = await fetcher('/api/course_student');
-        setData(response);
-      };
+      const response = await fetcher(`/api/course_students`, {
+        method: 'POST',
+        body: JSON.stringify({
+          course_ref_id: course_ref_id,
+        }),
+      });
+      //const loaded = await fetcher('/api/course_student');
+      setData(response);
     } catch (error) {
       // Handle the error
       console.error(error);
-      alert('An error occurred while fetching data from the API.');
     } finally {
       setIsLoading(false);
     }
   }
 
-  // useEffect(() => {
-  //   const { course_ref_id } = useParams();
-  //   const fetchData = async () => {
-  //     const response = await fetch(`/api/courses/${course_ref_id}`);
-  //     const data = await response.json();
-  //     // Use the data to update state or render the component...
-  //   };
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   // const [editItem, setEditItem] = useState<Student | null>(null);
   // const [formVisible, setFormVisible] = useState<boolean>(false);
+
+  const filterMap = {
+    All: ['enrolled', 'completed', 'failed', 'withdrawn'],
+    Enrolled: ['enrolled'],
+    Ended: ['completed', 'failed', 'withdrawn'],
+  };
+
+  const [statusFilter, setStatusFilter] =
+    useState<keyof typeof filterMap>('All');
 
   return (
     <PageContainer>
@@ -112,15 +110,15 @@ export default function CourseStudents() {
           Students
         </Title>
         <PageActions>
-          {/* <Button
-            icon={<IconUserAdd />}
-            // onClick={() => {
-            //   setEditItem(null);
-            //   setFormVisible(true);
-            // }}
-          >
-            New
-          </Button> */}
+          <Radio.Group
+            value={statusFilter}
+            type="button"
+            options={Object.keys(filterMap).map((e) => ({
+              label: e,
+              value: e,
+            }))}
+            onChange={(v) => setStatusFilter(v)}
+          ></Radio.Group>
         </PageActions>
       </PageTitle>
 
@@ -128,7 +126,7 @@ export default function CourseStudents() {
         <Table
           rowKey={(item: any) => item._id}
           columns={columns}
-          data={data}
+          data={data.filter((e) => filterMap[statusFilter].includes(e.status))}
           loading={isLoading}
         ></Table>
       </PageTableContainer>

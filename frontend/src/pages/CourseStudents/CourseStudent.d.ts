@@ -1,9 +1,6 @@
 interface CourseStudent {
-  student_id: String;
-  student_name: String;
-  gender: String;
-  age: Number;
-  department: String;
-  fee: Number;
+  student_id: string | Student;
+  course_id: string | Course;
+  status: "enrolled" | "completed" | "failed" | "withdrawn";
   _id: Number | String | undefined;
 }
