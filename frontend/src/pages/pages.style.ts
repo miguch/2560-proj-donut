@@ -63,4 +63,10 @@ export const ColumnHideOnNarrow = css`
   @media only screen and (max-width: 850px) {
     display: none;
   }
-`
+`;
+
+export const ColumnHideOnWidth = (width: number) => css`
+  @media only screen and (max-width: ${width}px) {
+    display: none;
+  }
+`;

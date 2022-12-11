@@ -138,7 +138,6 @@ app.post("/course_students", async function (request, response) {
 
 
 app.post("/grade", async function (request, response) {
-  const { student_id } = request.user
   let { selection_ref_id, grade, completed, failed } = request.body;
   const selectionItem = await selection.findOne({
     _id: selection_ref_id
@@ -150,7 +149,7 @@ app.post("/grade", async function (request, response) {
     });
     return;
   }
-  if (selectionItem.course_id.teacher_id !== request.user._id) {
+  if (!selectionItem.course_id.teacher_id.equals(request.user._id)) {
     response.status(400);
     response.json({
       message: "cannot change grade for courses taught by other teachers"
@@ -169,7 +168,9 @@ app.post("/grade", async function (request, response) {
     status: failed ? 'failed' : (completed ? 'completed' : 'enrolled'),
   })
 
-  response.send("grade successfully")
+  response.json({
+    status: 200
+  })
 });
 
 
@@ -227,7 +228,7 @@ app.post("/withdraw", async function (request, response) {
     });
     return;
   }
-  if (selectionItem.course_id.teacher_id !== request.user._id) {
+  if (!selectionItem.course_id.teacher_id.equals(request.user._id)) {
     response.status(400);
     response.json({
       message: "cannot withdraw students from courses taught by other teachers"
@@ -244,7 +245,9 @@ app.post("/withdraw", async function (request, response) {
   await selectionItem.update({
     status: "withdrawn"
   });
-  response.send("withdraw successfully");
+  response.json({
+    stauts: 200
+  });
 });
 
 //create selection
@@ -681,7 +684,7 @@ app.delete("/course", async function (request, response) {
   }
 
   if (request.user.type === 'teacher') {
-    if (courseItem.teacher_id !== request.user._id) {
+    if (!courseItem.teacher_id.equals(request.user._id)) {
       response.status(400);
       response.json({
         message: "cannot modify other teacher's course"

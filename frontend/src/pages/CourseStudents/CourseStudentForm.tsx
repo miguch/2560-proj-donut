@@ -4,29 +4,34 @@ import {
   Input,
   InputNumber,
   Modal,
+  Radio,
   Select,
+  Tooltip,
 } from '@arco-design/web-react';
 import useForm from '@arco-design/web-react/es/Form/useForm';
+import { IconQuestionCircle } from '@arco-design/web-react/icon';
 import { useEffect, useState } from 'react';
 import useFetch from '../../hooks/useFetch';
 
-interface StudentFormProps {
-  editItem: Student | null;
+interface CourseStudentFormProps {
+  editItem: CourseStudent | null;
   visible: boolean;
   onClose: () => void;
 }
-export default function StudentForm({
+export default function CourseStudentForm({
   editItem,
   visible,
   onClose,
-}: StudentFormProps) {
+}: CourseStudentFormProps) {
   const [form] = useForm();
+  const [_, rerender] = useState({});
 
   useEffect(() => {
     if (editItem) {
       for (const field in editItem) {
         form.setFieldValue(field, (editItem as any)[field]);
       }
+      rerender({});
     } else {
       form.resetFields();
     }
@@ -42,15 +47,14 @@ export default function StudentForm({
       const formValues = await form.validate();
       if (editItem) {
         // update
-        const data = await fetcher('/api/student', {
-          method: 'PUT',
-          body: JSON.stringify({ _id: editItem._id, ...formValues }),
-        });
-      } else {
-        // create
-        const data = await fetcher('/api/student', {
+        const data = await fetcher('/api/grade', {
           method: 'POST',
-          body: JSON.stringify(formValues),
+          body: JSON.stringify({
+            selection_ref_id: editItem._id,
+            grade: formValues.grade,
+            completed: formValues.status === 'completed',
+            failed: formValues.status === 'failed',
+          }),
         });
       }
       onClose();
@@ -61,6 +65,8 @@ export default function StudentForm({
     }
   }
 
+  if (!editItem) return <></>;
+
   return (
     <Modal
       title="Student"
@@ -70,38 +76,48 @@ export default function StudentForm({
       style={{ maxWidth: '80%' }}
     >
       <Form wrapperCol={{ span: 16 }} labelCol={{ span: 8 }} form={form}>
-        <Form.Item
-          rules={[{ required: true }]}
-          label="Student ID"
-          field="student_id"
-        >
-          <Input></Input>
+        <Form.Item rules={[{ required: true }]} label="Student ID">
+          <Input
+            disabled={true}
+            value={(editItem?.student_id as Student).student_id}
+          ></Input>
+        </Form.Item>
+        <Form.Item rules={[{ required: true }]} label="StudentName">
+          <Input
+            disabled={true}
+            value={(editItem?.student_id as Student).student_name}
+          ></Input>
         </Form.Item>
         <Form.Item
-          rules={[{ required: true }]}
-          label="Name"
-          field="student_name"
+          label={
+            <Tooltip content='Grading will only be official if status is not marked as "Enrolled"'>
+              Status <IconQuestionCircle />
+            </Tooltip>
+          }
+          field="status"
+          onChange={() => rerender({})}
         >
-          <Input></Input>
-        </Form.Item>
-        <Form.Item rules={[{ required: true }]} label="Gender" field="gender">
-          <Select>
-            <Select.Option value="Female">Female</Select.Option>
-            <Select.Option value="Male">Male</Select.Option>
-            <Select.Option value="Other">Other</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item rules={[{ required: true }]} label="Age" field="age">
-          <InputNumber></InputNumber>
+          <Radio.Group>
+            <Radio value="enrolled">Enrolled</Radio>
+            <Radio value="completed">Completed</Radio>
+            <Radio value="failed">Failed</Radio>
+          </Radio.Group>
         </Form.Item>
         <Form.Item
-          rules={[{ required: true }]}
-          label="Department"
-          field="department"
+          rules={[
+            {
+              required: form.getFieldValue('status') === 'completed',
+              message:
+                'Grading is required if the student completes the course',
+            },
+          ]}
+          label={
+            <Tooltip content="Grading is required if the student completes the course">
+              Grade <IconQuestionCircle />
+            </Tooltip>
+          }
+          field="grade"
         >
-          <Input></Input>
-        </Form.Item>
-        <Form.Item label="Fee" field="fee">
           <InputNumber></InputNumber>
         </Form.Item>
       </Form>

@@ -152,7 +152,7 @@ export default function CoursesHaveChosen() {
       </PageTitle>
       <PageTableContainer>
         <Table
-          rowKey={(item: any) => item._id}
+          rowKey={(item: Coursehavechosen) => item.selection_ref_id}
           columns={columns}
           data={data.filter((e) => filterMap[statusFilter].includes(e.status))}
           loading={isLoading}

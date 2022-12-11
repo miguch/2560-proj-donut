@@ -65,7 +65,7 @@ export default function Avatar() {
         style={{ textAlign: 'center', maxWidth: '80%' }}
       >
         <Image
-          src={user?.avatar || 'default.png'}
+          src={user?.avatar || '/default.png'}
           width="50px"
           height="50px"
         ></Image>

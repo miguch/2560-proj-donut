@@ -1,6 +1,6 @@
 interface Student {
-  student_id: String;
-  student_name: String;
+  student_id: string;
+  student_name: string;
   gender: String;
   age: Number;
   department: String;

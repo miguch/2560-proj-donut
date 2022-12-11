@@ -11,7 +11,7 @@ export default function Home() {
 
   const [greeting, setGreeting] = useState<string>(() => {
     const greetingList = JSON.parse(
-      `["Hello","Hi","Hey","G'day","Bonjour","Yo","Hola","Hallo","Ciao","Namaste","Hoi","M'athchomaroon","Hiya","Привет","مرحبا","Greetings","Aloha","こんにちは","Buenos dias","Heya","Olà","Howdy","שלום","Yooooooooooo","你好","Fraeslis","여보세요","Sul sul","Achuta","ਸਤ ਸ੍ਰੀ ਅਕਾਲ","Χαίρετε","سلام"]`
+      `["Hello","Hi","Hey","G'day","Bonjour","Yo","Hola","Hallo","Ciao","Namaste","Hoi","M'athchomaroon","Hiya","Привет","مرحبا","Greetings","Aloha","こんにちは","Buenos dias","Heya","Olà","Howdy","שלום","Yooooooooooo","你好","Fraeslis","여보세요","Sul sul","Achuta","ਸਤ ਸ੍ਰੀ ਅਕਾਲ","Χαίρετε","سلام","Selamat"]`
     );
     return greetingList[Math.floor(Math.random() * greetingList.length)];
   });

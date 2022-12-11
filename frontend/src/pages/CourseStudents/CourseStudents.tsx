@@ -1,4 +1,10 @@
-import { Button, Radio, Table } from '@arco-design/web-react';
+import {
+  Button,
+  Message,
+  Popconfirm,
+  Radio,
+  Table,
+} from '@arco-design/web-react';
 import Title from '@arco-design/web-react/es/Typography/title';
 import { IconUserAdd } from '@arco-design/web-react/icon';
 import { useEffect, useMemo, useState } from 'react';
@@ -6,6 +12,7 @@ import { useParams } from 'react-router-dom'; //
 import useFetch from '../../hooks/useFetch';
 import {
   ColumnHideOnNarrow,
+  ColumnHideOnWidth,
   PageActions,
   PageContainer,
   PageTableContainer,
@@ -36,30 +43,60 @@ export default function CourseStudents() {
         dataIndex: 'department',
         render: (_: undefined, item: CourseStudent) =>
           (item.student_id as Student).department,
-        className: ColumnHideOnNarrow,
+        className: ColumnHideOnWidth(1020),
       },
       {
         key: 'status',
         title: 'Status',
         dataIndex: 'status',
       },
-      // {
-      //   key: 'action',
-      //   title: 'Action',
-      //   render: (_: Number, item: Student) => (
-      //     <>
-      //       <Button
-      //         onClick={() => {
-      //           setEditItem(item);
-      //           setFormVisible(true);
-      //         }}
-      //       >
-      //         Edit
-      //       </Button>
-      //     </>
-
-      //   ),
-      // },
+      {
+        key: 'grade',
+        title: 'Grade',
+        dataIndex: 'grade',
+      },
+      {
+        key: 'grading',
+        title: 'Grading',
+        render: (_: Number, item: CourseStudent) => (
+          <Button
+            status="success"
+            disabled={item.status === 'withdrawn'}
+            onClick={() => {
+              setEditItem(item);
+              setFormVisible(true);
+            }}
+          >
+            Grade
+          </Button>
+        ),
+      },
+      {
+        key: 'withdraw',
+        title: 'Withdraw',
+        render: (_: Number, item: CourseStudent) => (
+          <Popconfirm
+            title={`Are you sure?`}
+            disabled={item.status !== 'enrolled'}
+            onOk={async () => {
+              try {
+                await fetcher('/api/withdraw', {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    selection_ref_id: item._id,
+                  }),
+                });
+                Message.success('Withdrew successfully');
+                load();
+              } catch (e) {}
+            }}
+          >
+            <Button disabled={item.status !== 'enrolled'} status="warning">
+              Withdraw
+            </Button>
+          </Popconfirm>
+        ),
+      },
     ],
     []
   );
@@ -91,8 +128,8 @@ export default function CourseStudents() {
     load();
   }, []);
 
-  // const [editItem, setEditItem] = useState<Student | null>(null);
-  // const [formVisible, setFormVisible] = useState<boolean>(false);
+  const [editItem, setEditItem] = useState<CourseStudent | null>(null);
+  const [formVisible, setFormVisible] = useState<boolean>(false);
 
   const filterMap = {
     All: ['enrolled', 'completed', 'failed', 'withdrawn'],
@@ -131,14 +168,14 @@ export default function CourseStudents() {
         ></Table>
       </PageTableContainer>
 
-      {/* <CourseStudentForm
+      <CourseStudentForm
         visible={formVisible}
         onClose={() => {
           setFormVisible(false);
           load();
         }}
         editItem={editItem}
-      ></CourseStudentForm> */}
+      ></CourseStudentForm>
     </PageContainer>
   );
 }
