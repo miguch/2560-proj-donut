@@ -33,11 +33,11 @@ PittCourse includes the following features:
 
 - Mingtao Chen (mic148) was responsible for implementing the authentication and permissions logic on both frontend and backend, setting up the frontend development framework, the home pages for all three types of users, and the accounts/courses management pages in the admin frontend. He also implemented some backend validation logic in the system, e.g. checking course time conflict, prerequisites, and capacity when students are registering for a course.
 
-- Qisheng Ye was responsible for the front end of student users, which consists of course list and enrollment. Students could register for courses on the course list page and drop courses at the enrollment page. Through the backend API `/havechosen` and `/couldchose`, he implemented two views of student users. He also utilized ‘register_course' and ‘drop_course' to realize the real-time update of the corresponding list of students' course selections.
+- Qisheng Ye (qiy48) was responsible for the front end of student users, which consists of course list and enrollment. Students could register for courses on the course list page and drop courses at the enrollment page. Through the backend API `/havechosen` and `/couldchose`, he implemented two views of student users. He also utilized ‘register_course' and ‘drop_course' to realize the real-time update of the corresponding list of students' course selections.
 
--Xinge(Charlotte) Wang(xiw178) was responsible for implementing the course_students component, in which teachers are responsible for managing the courses they are assigned to, including adding and removing students from their courses, and entering and updating student grades.
+- Xinge(Charlotte) Wang(xiw178) was responsible for implementing the course_students component, in which teachers are responsible for managing the courses they are assigned to, including adding and removing students from their courses, and entering and updating student grades.
 
--Yiming Zeng(yiz182) was responsible for implementing the server side. He defined 4 Mongoose schemes: account, user, student, teacher, and course, and connected them together by reference. He also writes backend logic code, like Account information CRUD, Teacher information CRUD, Student information CRUD and Selection information CRUD. Except for these general functions, Yiming implemented some specific features like modify scores of students, retrive the course which can be chosen or cannot be chosen and so on. 
+- Yiming Zeng(yiz182) was responsible for implementing the server side. He defined 4 Mongoose schemes: account, user, student, teacher, and course, and connected them together by reference. He also writes backend logic code, like Account information CRUD, Teacher information CRUD, Student information CRUD and Selection information CRUD. Except for these general functions, Yiming implemented some specific features like modify scores of students, retrive the course which can be chosen or cannot be chosen and so on. 
 
 ## Technical Architecture
 
@@ -66,8 +66,6 @@ Courses in the system contain information about course names, teacher, time, cap
 Students’ course enrollment information is stored in a selection table, each record contains the reference to the student and course, the grade of the student if they finish the course, and a status marking whether the student is currently enrolled, have completed, have failed, or have withdrawn from the course.
 
 ## Challenges
-
-
 
 * Setting up the dependencies. In some circumstances, the dependencies work differently in some operating systems and different node.js versions, which may cause different behaviors in different group members’ devices.
 * Dealing with asynchronous code when working with the MongoDB database. We had to use async/await and Promises to make sure that our queries were executed in the correct order.
@@ -111,6 +109,8 @@ For the iterations of courses, JavaScript, Express framework, REST APIs, CRUD an
 - React: https://reactjs.org/
 
 - arco-design: https://arco.design/react/en-US/docs/start
+
+- React Router: https://reactrouter.com/en/main
 
 ## Testing instructions
 
