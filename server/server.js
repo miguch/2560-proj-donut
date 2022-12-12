@@ -279,6 +279,18 @@ app.post("/register_course", async function (request, response) {
     });
     return;
   }
+  const coursesTaken = await selection.find({
+    student_id: request.user._id,
+    status: 'completed'
+  }).populate("course_id");
+
+  if (!prerequisiteCheck(coursesTaken.map(e => e.course_id.course_id), courRes)) {
+    response.status(400);
+    response.json({
+      message: "Prerequisites not satisfied"
+    });
+    return;
+  }
 
   // check if course has capacity
   if (!(await checkHasSpot(course_ref_id))) {
