@@ -1,33 +1,11 @@
-<!-- Output copied to clipboard! -->
 
-<!-----
-
-Yay, no errors, warnings, or alerts!
-
-Conversion time: 0.496 seconds.
-
-
-Using this Markdown file:
-
-1. Paste this output into your source file.
-2. See the notes and action items below regarding this conversion run.
-3. Check the rendered output (headings, lists, code blocks, tables) for proper
-   formatting and use a linkchecker before you publish this page.
-
-Conversion notes:
-
-* Docs to Markdown version 1.0β33
-* Sun Dec 11 2022 15:10:22 GMT-0800 (PST)
-* Source doc: Final Report
-* Tables are currently converted to HTML tables.
------>
 
 
 # Course Registration System - PittCourse
 
 ## Introduction
 
-The team consisted of Yiming Zeng, Qisheng Ye, Xinge(Charlotte) Wang, and Mingtao Chen (mic148). The project is a course registration system made for both students and teachers and the admin. The frontend of the application is built with React and uses the arco-design library for the UI styling. The backend of the system is built with Express.
+The team consisted of Yiming Zeng (yiz182), Qisheng Ye (qiy48), Xinge(Charlotte) Wang (xiw178), and Mingtao Chen (mic148). The project is a course registration system made for both students and teachers and the admin. The frontend of the application is built with React and uses the arco-design library for the UI styling. The backend of the system is built with Express.
 
 ## Objective
 
@@ -57,7 +35,9 @@ PittCourse includes the following features:
 
 - Qisheng Ye was responsible for the front end of student users, which consists of course list and enrollment. Students could register for courses on the course list page and drop courses at the enrollment page. Through the backend API `/havechosen` and `/couldchose`, he implemented two views of student users. He also utilized ‘register_course' and ‘drop_course' to realize the real-time update of the corresponding list of students' course selections.
 
--Xinge(Charlotte) Wang(xiw178) was responsible for implementing the course_students component. Teachers are responsible for managing the courses they are assigned to, including adding and removing students from their courses, and entering and updating student grades.
+-Xinge(Charlotte) Wang(xiw178) was responsible for implementing the course_students component, in which teachers are responsible for managing the courses they are assigned to, including adding and removing students from their courses, and entering and updating student grades.
+
+-Yiming Zeng(yiz182) was responsible for implementing the server side. He defined 4 Mongoose schemes: account, user, student, teacher, and course, and connected them together by reference. He also writes backend logic code, like Account information CRUD, Teacher information CRUD, Student information CRUD and Selection information CRUD. Except for these general functions, Yiming implemented some specific features like modify scores of students, retrive the course which can be chosen or cannot be chosen and so on. 
 
 ## Technical Architecture
 
@@ -112,6 +92,7 @@ Students’ course enrollment information is stored in a selection table, each r
 * Course planner, which is like a shopping cart that the users can use to store some courses they want to take but are not taking right now.
 * Optimize database query performance, e.g. reduce the number of queries for fetching the number of students enrolled in a course.
 * Support better user experience for teachers, e.g. allowing teachers to grade students in bulk by uploading a csv/excel file.
+* Integrate with third party payment service to collect tuition fees.
 
 ## Conclusion 
 
@@ -143,70 +124,13 @@ For the iterations of courses, JavaScript, Express framework, REST APIs, CRUD an
 
 Test Account: 
 
+| Type    | Username | Password    |
+| ------- | -------- | ----------- |
+| Admin   | admin    | admin_token |
+| Student | mic148   | 12345       |
+| Teacher | 1202     | 12345       |
+| Student | 19120005 | zangshulei  |
+| Teacher | 1203     | karimi      |
+| Student | 12390901 | 12390901    |
+| Teacher | 1204     | 1204        |
 
-<table>
-  <tr>
-   <td>Type
-   </td>
-   <td>Username
-   </td>
-   <td>Password
-   </td>
-  </tr>
-  <tr>
-   <td>Admin
-   </td>
-   <td>admin
-   </td>
-   <td>admin_token
-   </td>
-  </tr>
-  <tr>
-   <td>Student
-   </td>
-   <td>mic148
-   </td>
-   <td>12345
-   </td>
-  </tr>
-  <tr>
-   <td>Teacher
-   </td>
-   <td>1202
-   </td>
-   <td>12345
-   </td>
-  </tr>
-  <tr>
-   <td>Student 
-   </td>
-   <td>19120005
-   </td>
-   <td>zangshulei
-   </td>
-  </tr>
-  <tr>
-   <td>Teacher 
-   </td>
-   <td>1203
-   </td>
-   <td>karimi
-   </td>
-  </tr>
-  <tr>
-   <td>Student 
-   </td>
-   <td>12390901 
-   </td>
-   <td>12390901 
-   </td>
-  </tr>
-  <tr>
-   <td>Teacher 
-   </td>
-   <td>1204 
-   </td>
-   <td>1204 
-   </td>
-  </tr>
-</table>
