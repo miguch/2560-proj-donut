@@ -123,9 +123,11 @@ api.get(
         userItem = await teacherUser.findOne({
           github_id: req.user.id,
         });
-        accountItem = await teacher.findOne({
-          _id: userItem.username,
-        });
+        if (userItem) {
+          accountItem = await teacher.findOne({
+            _id: userItem.username,
+          });
+        }
       }
     }
     if (userItem && accountItem) {
