@@ -110,7 +110,7 @@ api.get(
         github_id: req.user.id,
       });
       delete req.session.account;
-      return;
+      req.logout(() => {});
     } else {
       userItem = await studentUser.findOne({
         github_id: req.user.id,
